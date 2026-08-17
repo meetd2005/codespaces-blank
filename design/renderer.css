@@ -1,0 +1,61 @@
+/* ==========================================================================
+   renderer.css
+
+   Loaded last, after design/styles.css. This file holds only the deliberate
+   deviations from the exported design — kept separate so styles.css stays a
+   byte-faithful copy of the Altered Security export and can be re-exported
+   without losing these fixes.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Attack-vector headings are numbered in the body, not only in the TOC.
+
+   The exported template marks finding headings `class="in-toc text-center"`
+   without `numbered`, while the TOC numbers every entry from list counters.
+   That makes the TOC read "6.1 Kerberoasting" while the page itself shows an
+   unnumbered heading. Numbering the heading here keeps the two in step, and
+   recolours the counter for the navy header bar it sits on.
+   -------------------------------------------------------------------------- */
+table.finding-header th h2.numbered::before {
+    color: #fff;
+    padding-right: 3mm;
+}
+
+/* --------------------------------------------------------------------------
+   2. Keep the asset card with the description that follows it.
+   -------------------------------------------------------------------------- */
+table.finding-header {
+    break-inside: avoid;
+    break-after: avoid;
+}
+
+/* --------------------------------------------------------------------------
+   3. Long command transcripts are the bulk of this report. Allow them to break
+      across pages (a two-page transcript must not be shunted whole onto the
+      next page, leaving half a page blank) while keeping a couple of lines
+      together on each side of the break.
+   -------------------------------------------------------------------------- */
+pre code {
+    break-inside: auto;
+    orphans: 2;
+    widows: 2;
+}
+
+/* --------------------------------------------------------------------------
+   4. Screenshot evidence: the design caps figures at 86mm tall, which is right
+      for the methodology diagram but crops detail out of full-width terminal
+      screenshots. `.evidence` opts an image into a taller box.
+
+      Usage:  ![Caption](images/foo.png){.evidence}
+   -------------------------------------------------------------------------- */
+figure.evidence img {
+    max-height: 150mm;
+}
+
+/* --------------------------------------------------------------------------
+   5. Appendix content is frequently wide command output; shrink it a step so
+      long lines survive without wrapping.
+   -------------------------------------------------------------------------- */
+.appendix pre code {
+    font-size: 0.8em;
+}

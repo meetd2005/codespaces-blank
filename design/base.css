@@ -1,0 +1,172 @@
+/* ==========================================================================
+   base.css
+
+   The Altered Security design starts with `@import "/assets/global/base.css";`
+   which, inside SysReptor, pulls in the platform's global stylesheet. That file
+   ships with the SysReptor renderer and is not part of the exported design
+   archive, so this is a standalone reconstruction of the parts the design
+   actually depends on:
+
+     - heading numbering counters for `.numbered`
+     - figure / table counters and caption prefixes
+     - the `<pagebreak>` element
+     - `.ref` / `.ref-title` cross-reference plumbing
+     - sensible print defaults
+
+   Everything visual (colours, fonts, page geometry, cover, TOC) comes from
+   design/styles.css, which is the untouched export and is loaded after this.
+   ========================================================================== */
+
+:root {
+    /* Caption/reference prefixes. styles.css reads --prefix-figure. */
+    --prefix-figure: "Figure ";
+    --prefix-table: "Table ";
+}
+
+/* ---- Document defaults -------------------------------------------------- */
+html {
+    counter-reset: h1counter figure-counter table-counter;
+    hyphens: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Keep headings attached to the content that follows them. */
+h1, h2, h3, h4, h5, h6 {
+    break-after: avoid;
+    break-inside: avoid;
+}
+
+/* Avoid orphan/widow lines. */
+p, li {
+    orphans: 2;
+    widows: 2;
+}
+
+/* Tables and figures should not be split mid-row. */
+tr, figure {
+    break-inside: avoid;
+}
+
+thead {
+    display: table-header-group;
+}
+
+/* ---- Page breaks -------------------------------------------------------- */
+/* SysReptor exposes a <pagebreak /> component; here it is a plain element. */
+pagebreak {
+    display: block;
+    break-after: page;
+}
+
+/* A trailing pagebreak must not manufacture a blank final page. */
+pagebreak:last-child {
+    break-after: auto;
+}
+
+/* ---- Heading numbering -------------------------------------------------- */
+/* Only headings carrying `.numbered` take part in the numbering sequence,
+   which is what the design's template marks up. */
+h1.numbered {
+    counter-increment: h1counter;
+    counter-reset: h2counter;
+}
+
+h2.numbered {
+    counter-increment: h2counter;
+    counter-reset: h3counter;
+}
+
+h3.numbered {
+    counter-increment: h3counter;
+    counter-reset: h4counter;
+}
+
+h4.numbered {
+    counter-increment: h4counter;
+}
+
+h1.numbered::before {
+    content: counter(h1counter);
+}
+
+h2.numbered::before {
+    content: counter(h1counter) "." counter(h2counter);
+}
+
+h3.numbered::before {
+    content: counter(h1counter) "." counter(h2counter) "." counter(h3counter);
+}
+
+h4.numbered::before {
+    content: counter(h1counter) "." counter(h2counter) "." counter(h3counter) "." counter(h4counter);
+}
+
+/* ---- Figures ------------------------------------------------------------ */
+figure {
+    counter-increment: figure-counter;
+}
+
+figure figcaption::before {
+    content: var(--prefix-figure) counter(figure-counter) ": ";
+}
+
+/* ---- Tables with captions ---------------------------------------------- */
+table caption {
+    counter-increment: table-counter;
+}
+
+table caption::before {
+    content: var(--prefix-table) counter(table-counter) ": ";
+}
+
+/* ---- Cross references --------------------------------------------------- */
+/* `<ref to="id">text</ref>` renders as an anchor. When it has no text of its
+   own the renderer injects a `.ref-title` span holding the target's title. */
+.ref {
+    text-decoration: none;
+    color: inherit;
+}
+
+.ref .ref-title {
+    font-style: normal;
+}
+
+/* ---- Footnotes ---------------------------------------------------------- */
+/* WeasyPrint's `float: footnote` moves these into the @footnote area. */
+.footnote {
+    float: footnote;
+    font-size: 8pt;
+    text-align: left;
+}
+
+.footnote-ref {
+    vertical-align: super;
+    font-size: 0.75em;
+    line-height: 0;
+}
+
+/* ---- Utilities used by the template ------------------------------------ */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Markdown task lists. */
+li.task-list-item {
+    list-style: none;
+}
+
+/* Long, unbreakable command output should wrap rather than overflow. */
+pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0 0 0.9em 0;
+    break-inside: auto;
+}
