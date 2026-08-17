@@ -72,7 +72,10 @@ INLINE_FOOTNOTE_RE = re.compile(r"\^\[((?:[^\[\]]|\[[^\]]*\])*)\]")
 
 # `{#id .class}` attribute lists: the design template writes `.in-toc.numbered`
 # (markdown-it style, no separator) where Python-Markdown wants them separated.
-ATTR_LIST_RE = re.compile(r"\{([^{}\n]*)\}\s*$", re.MULTILINE)
+# Note: the trailing whitespace class is `[ \t]*`, NOT `\s*` -- `\s` would match
+# the newline after `{.evidence}` and delete it, collapsing the blank line that
+# separates an image from the following paragraph (merging them into one <p>).
+ATTR_LIST_RE = re.compile(r"\{([^{}\n]*)\}[ \t]*$", re.MULTILINE)
 
 
 def _normalise_attr_lists(text: str) -> str:

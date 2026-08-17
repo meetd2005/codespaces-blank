@@ -299,6 +299,8 @@ findings:
 
       ![Defender real-time monitoring disabled](images/img18.png)
 
+      ![Adding `studentuser` to the local Administrators group](images/img19.png)
+
       Dump credentials from LSASS with SafetyKatz launched through a loader:
 
       ```powershell
@@ -314,6 +316,8 @@ findings:
       ```
 
       ![`STUDVM$` machine-account NTLM hash recovered from LSASS](images/img20.png){.evidence}
+
+      ![`studentuser` NTLM hash also recovered from LSASS](images/img21.png)
     recommendation: |
       - Deploy **LAPS** and **Windows Defender Credential Guard** to protect LSASS
         secrets and prevent machine/domain credential reuse.
@@ -344,6 +348,15 @@ findings:
       authority publishing an ESC3-vulnerable template, and BloodHound confirmed a
       short path to Domain Admin.
     compromise_steps: |
+      From the STUDVM foothold the domain was identified and adPEAS was run for
+      automated enumeration:
+
+      ![Initial foothold on the STUDVM workstation](images/img00.png)
+
+      ![Domain identified from the foothold host](images/img01.png)
+
+      ![Running adPEAS for automated domain enumeration](images/img02.png)
+
       adPEAS identifies the domain and the **bidirectional, quarantined trust**
       to `finance.corp`:
 
@@ -354,6 +367,10 @@ findings:
       ```
 
       ![Forest trust to `finance.corp` discovered by adPEAS](images/img04.png)
+
+      ![adPEAS: domain, domain controller and Kerberos policy overview](images/img03.png){.evidence}
+
+      ![adPEAS: LDAP and SMB signing configuration from GPO](images/img05.png){.evidence}
 
       Privileged-account enumeration shows `techadmin` is the RID 500 account and
       sits in every Tier-0 group:
@@ -366,6 +383,20 @@ findings:
       ```
 
       ![`techadmin` (RID 500) in Domain Admins and Enterprise Admins](images/img10.png){.evidence}
+
+      ![Unprotected Tier-0: `techadmin` is not in the Protected Users group](images/img11.png)
+
+      ![`ms-DS-MachineAccountQuota` set to 10 (any user may join computers)](images/img06.png)
+
+      ![LAPS not deployed: all five computers unprotected](images/img13.png)
+
+      ![Domain controller computer object (trusted for delegation)](images/img12.png)
+
+      ![AD CS certificate authority and its published templates](images/img07.png){.evidence}
+
+      ![`FIDO` template flagged ESC3 (Certificate Request Agent / Enrollment Agent)](images/img08.png){.evidence}
+
+      ![`FIDOUsers` template also flagged ESC3](images/img09.png){.evidence}
 
       Key weaknesses surfaced during enumeration:
 
@@ -387,6 +418,12 @@ findings:
       ```
 
       ![BloodHound shortest path to Domain Admin](images/img14.png){.evidence}
+
+      ![Invoke-SessionHunter: privileged sessions on ADMINSRV86 and MGMTSRV](images/img22.png)
+
+      ![Find-PSRemotingLocalAdminAccess enumeration](images/img23.png)
+
+      ![Get-DomainComputer -Unconstrained: TECH-DC trusted for delegation](images/img24.png)
     recommendation: |
       - Lower `ms-DS-MachineAccountQuota` to **0** so standard users cannot create
         computer accounts (a prerequisite for several delegation attacks).
@@ -419,6 +456,8 @@ findings:
       Rubeus.exe asktgt /user:studvm$ /rc4:354cc671b0e734b885308de998576b0b `
         /domain:tech.corp /dc:tech-dc.tech.corp /ptt
       ```
+
+      ![Over-Pass-the-Hash: a TGT is requested for the `STUDVM$` machine account](images/img25.png)
 
       Configure RBCD so MGMTSRV trusts `STUDVM$` to act on behalf of others:
 
@@ -459,6 +498,12 @@ findings:
       ```
 
       ![`techservice` credentials recovered from MGMTSRV](images/img31.png)
+
+      ![Full credential dump on MGMTSRV (1/2)](images/img29.png){.evidence}
+
+      ![Full credential dump on MGMTSRV (2/2)](images/img30.png){.evidence}
+
+      ![`MGMTSRV$` machine-account hash also recovered](images/img32.png)
     recommendation: |
       - Audit and remove write access to **`msDS-AllowedToActOnBehalfOfOtherIdentity`**
         for non-administrative principals; no account should be able to configure
@@ -494,6 +539,14 @@ findings:
 
       ![`Management` group holds Force-Change-Password over `puretech`](images/img35.png)
 
+      ![Domain groups: `Management` and `srvusers` stand out as custom groups](images/img33.png)
+
+      ![`techservice` ACLs, including Self-Membership on `Management`](images/img34.png){.evidence}
+
+      ![`techservice` Self-Membership right over the `Management` group](images/img36.png)
+
+      ![Confirming `Management` holds User-Force-Change-Password over `puretech`](images/img40.png){.evidence}
+
       Add `techservice` into the `Management` group:
 
       ```powershell
@@ -514,6 +567,10 @@ findings:
 
       ![Fresh `techservice` TGT requested after the group change](images/img41.png)
 
+      ![Requesting the `techservice` TGT in a new window](images/img37.png)
+
+      ![Operating inside the refreshed `techservice` session](images/img38.png)
+
       With the refreshed context, force-reset the `puretech` password:
 
       ```powershell
@@ -527,6 +584,10 @@ findings:
       with:
 
       ![Interactive session as `puretech`](images/img44.png)
+
+      ![Requesting a `puretech` TGT in a sacrificial process](images/img43.png)
+
+      ![Confirmed access as `puretech`](images/img45.png)
     recommendation: |
       - Remove the **Self-Membership** ACE that lets `techservice` add itself to
         `Management`, and the **User-Force-Change-Password** right the group holds
@@ -575,6 +636,10 @@ findings:
         connectport=80 connectaddress=<STUDVM foothold>
       ```
 
+      ![Staging the loader onto TECHSRV30 through the port-proxy](images/img47.png)
+
+      ![Port-proxy configured and SafetyKatz run through the loader](images/img48.png)
+
       The machine account is recovered from LSASS:
 
       ```text
@@ -582,6 +647,8 @@ findings:
       * Domain   : TECH
       * NTLM     : 04b37fd7d28ab7c9b3cbe36336d19581
       ```
+
+      ![`TECHSRV30$` machine-account hash recovered](images/img49.png)
 
       Elevate to SYSTEM and dump the SAM to recover the local administrator
       `securetech` (RID 500):
@@ -634,6 +701,10 @@ findings:
 
       ![`TECHSRV30$` self-added to the `srvusers` group (local admin on ADMINSRV86)](images/img53.png)
 
+      ![`srvusers` group and its Self-Membership ACE for `TECHSRV30$`](images/img52.png){.evidence}
+
+      ![`srvusers` membership confirmed: `TECHSRV30$`](images/img54.png)
+
       Request a `TECHSRV30$` TGT in a sacrificial logon session, giving admin
       access to ADMINSRV86 through the `srvusers` membership:
 
@@ -661,6 +732,10 @@ findings:
       * Domain   : TECH
       * NTLM     : 390d9db95b492e45c4e43b85d2b9c432
       ```
+
+      ![`ADMINSRV86$` machine account recovered](images/img57.png)
+
+      ![Credential dump on ADMINSRV86](images/img58.png){.evidence}
     recommendation: |
       - Remove the `Self-Membership` ACE that lets `TECHSRV30$` join `srvusers`,
         and review why a computer account grants local admin on ADMINSRV86.
@@ -701,6 +776,12 @@ findings:
 
       ![Requesting the FIDO enrollment-agent certificate as `causer`](images/img60.png)
 
+      ![`causer` identified as a principal able to enrol in the FIDO (ESC3) template](images/img50.png)
+
+      ![Launching a logon session as `causer` (runas /netonly)](images/img59.png)
+
+      ![Converting the enrollment-agent certificate to PFX](images/img61.png){.evidence}
+
       Use the agent certificate to request a certificate **on behalf of**
       `techadmin` from the `FIDOUsers` template:
 
@@ -711,6 +792,8 @@ findings:
       ```
 
       ![On-behalf-of certificate issued for the Domain Admin `techadmin`](images/img62.png){.evidence}
+
+      ![Converting the `techadmin` certificate to PFX](images/img63.png){.evidence}
 
       Convert the `techadmin` certificate and authenticate via PKINIT to receive a
       **Domain Admin TGT**:
@@ -787,6 +870,10 @@ findings:
 
       ![Inter-realm trust keys extracted via DCSync](images/img67.png){.evidence}
 
+      ![`lsadump::evasive-trust /patch`: In / Out inter-realm trust keys](images/img66.png){.evidence}
+
+      ![DCSync of `tech\krbtgt` (hash used in the superseded attempt)](images/img68.png){.evidence}
+
       **Attempted approach (blocked by SID filtering).** A cross-forest Golden
       Ticket using the `tech\krbtgt` hash with SID history for `finance.corp`
       Enterprise Admins (RID 519) was rejected by the quarantined trust:
@@ -820,6 +907,8 @@ findings:
 
       ![Inter-realm TGT forged for `finadmin` and exchanged for a CIFS ticket](images/img69.png){.evidence}
 
+      ![CIFS service ticket obtained; `TechOperations` share lists `finadmin.pem`](images/img70.png){.evidence}
+
       Access the cross-forest share; it exposes an **unencrypted** private key
       `finadmin.pem`. The `openssl` conversion only prompts for an *export*
       password (the one being set), never an *import* password, proving the PEM
@@ -845,6 +934,8 @@ findings:
         /domain:finance.corp /dc:finance-dc.finance.corp `
         /createnetonly:C:\Windows\System32\cmd.exe /show /ptt
       ```
+
+      ![PKINIT as `finadmin`: Domain Admin TGT issued for `finance.corp`](images/img72.png){.evidence}
 
       Verify the ticket, confirm remote access, and read the **final flag**
       locally on FINANCE-DC:
