@@ -59,3 +59,22 @@ figure.evidence img {
 .appendix pre code {
     font-size: 0.8em;
 }
+
+/* --------------------------------------------------------------------------
+   6. Consolidated Recommendations section: a compact single-column list, one
+      block per finding, instead of a two-column table with tall empty cells.
+   -------------------------------------------------------------------------- */
+.reco-item {
+    break-inside: avoid;
+    margin-bottom: 0.4em;
+}
+.reco-head {
+    text-transform: none;
+    font-size: 11pt;
+    letter-spacing: 0;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 0.12em;
+    margin: 0.9em 0 0.4em 0;
+}
+.reco-head a { color: var(--navy); }
+.reco-item ul { margin-bottom: 0.2em; }

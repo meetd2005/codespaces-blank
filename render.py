@@ -464,9 +464,9 @@ def build_document(data: dict, base_dir: Path) -> str:
     w("</section>")
     w("<pagebreak />")
 
-    # ---- compromission path ------------------------------------------------
+    # ---- compromise path ---------------------------------------------------
     w("<section>")
-    w('  <h1 id="findings" class="in-toc numbered">Compromission Path</h1>')
+    w('  <h1 id="findings" class="in-toc numbered">Compromise Path</h1>')
     for finding in findings:
         fid = finding["id"]
         w('  <div class="finding">')
@@ -487,8 +487,8 @@ def build_document(data: dict, base_dir: Path) -> str:
 
         w("    <h3>Description</h3>")
         w(r.md(finding.get("description")))
-        w("    <h3>Compromission Steps</h3>")
-        w(r.md(finding.get("compromission_steps")))
+        w("    <h3>Compromise Steps</h3>")
+        w(r.md(finding.get("compromise_steps") or finding.get("compromission_steps")))
         w("    <h3>Recommendations</h3>")
         w(r.md(finding.get("recommendation")))
 
@@ -511,18 +511,20 @@ def build_document(data: dict, base_dir: Path) -> str:
     w("</section>")
 
     # ---- recommendations (placed near the end) -----------------------------
+    # A compact, single-column consolidation of the per-finding recommendations,
+    # each linked back to its finding. Avoids the tall two-column table cells.
     w("<section>")
     w('  <h1 id="recommendations" class="in-toc numbered">Recommendations</h1>')
-    w('  <table class="tbl-reco">')
-    w('    <thead><tr><th style="width: 150px;">Name</th><th>Details</th></tr></thead>')
-    w("    <tbody>")
+    w("  <p>Each recommendation below is drawn from the finding of the same "
+      "number in the Compromise Path. They are ordered so that the earliest "
+      "items break the earliest links in the attack chain.</p>")
     for finding in findings:
         fid = finding["id"]
-        w(f'      <tr class="table-row-link">'
-          f'<td><a class="ref" href="#{esc(fid)}">{esc(finding.get("title", ""))}</a></td>'
-          f'<td><a class="ref" href="#{esc(fid)}">{r.md(finding.get("recommendation"))}</a></td></tr>')
-    w("    </tbody>")
-    w("  </table>")
+        w('  <div class="reco-item">')
+        w(f'    <h3 class="reco-head"><a class="ref" href="#{esc(fid)}">'
+          f'{esc(finding.get("title", ""))}</a></h3>')
+        w(f'    {r.md(finding.get("recommendation"))}')
+        w("  </div>")
     w("</section>")
     w("<pagebreak />")
 

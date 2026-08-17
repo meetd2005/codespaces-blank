@@ -220,7 +220,7 @@ report:
         | OpenSSL | PEM to PFX certificate conversion |
 
 # =============================================================================
-# Findings: the "Compromission Path", rendered in order.
+# Findings: the "Compromise Path", rendered in order.
 # =============================================================================
 findings:
   # ---------------------------------------------------------------------------
@@ -237,7 +237,7 @@ findings:
       had been hard-coded. Storing credentials in a world-readable script is a
       classic operational mistake and it provided the first privilege
       escalation on the foothold host.
-    compromission_steps: |
+    compromise_steps: |
       Enumerate shares on the domain controller and open the unusual
       `maintenance` share:
 
@@ -289,7 +289,7 @@ findings:
       high-integrity session, and LSASS was dumped with an evasive build of
       Mimikatz. This yielded the **NTLM hash of the machine account `STUDVM$`**,
       which becomes the key to the delegation attack in finding F-4.
-    compromission_steps: |
+    compromise_steps: |
       Disable Defender real-time monitoring and grant `studentuser` local admin:
 
       ```powershell
@@ -343,7 +343,7 @@ findings:
       Protected Users membership. adPEAS also flagged an AD CS certificate
       authority publishing an ESC3-vulnerable template, and BloodHound confirmed a
       short path to Domain Admin.
-    compromission_steps: |
+    compromise_steps: |
       adPEAS identifies the domain and the **bidirectional, quarantined trust**
       to `finance.corp`:
 
@@ -412,7 +412,7 @@ findings:
       `techadmin`) to services on MGMTSRV, giving full command execution on the
       host. Dumping the server then yielded the `techservice` account used in the
       next stage.
-    compromission_steps: |
+    compromise_steps: |
       Request a TGT for the machine account using its hash (Over-Pass-the-Hash):
 
       ```powershell
@@ -484,7 +484,7 @@ findings:
       held **`User-Force-Change-Password`** over the user `puretech`. By walking
       this chain we reset `puretech`'s password without knowing its current
       value, a pure permissions abuse that requires no cracking.
-    compromission_steps: |
+    compromise_steps: |
       Enumerate what `techservice` can do, and the group's rights over `puretech`:
 
       ```powershell
@@ -554,7 +554,7 @@ findings:
       administrator `securetech` and the machine account `TECHSRV30$`. `TECHSRV30$`
       is a member of the custom **`srvusers`** group through a `Self-Membership`
       ACL; that group membership is the pivot used to reach ADMINSRV86 in F-7.
-    compromission_steps: |
+    compromise_steps: |
       Confirm local administrator command execution on TECHSRV30 as `puretech`:
 
       ```text
@@ -621,7 +621,7 @@ findings:
       (stored as the `SNMPTRAP` service credential) in cleartext, along with the
       `ADMINSRV86$` machine account. `causer` is the account that holds the
       certificate-enrollment rights abused in F-8.
-    compromission_steps: |
+    compromise_steps: |
       `TECHSRV30$` has a `Self-Membership` ACE on `srvusers`; add it to the group:
 
       ```powershell
@@ -687,7 +687,7 @@ findings:
       template, used that certificate to authenticate with **PKINIT**, obtained a
       Domain Admin TGT, and proved operating-system-level command execution on the
       domain controller.
-    compromission_steps: |
+    compromise_steps: |
       Launch a logon session as `causer` with the recovered password, then request
       the enrollment-agent certificate from the `FIDO` template and convert it to
       PFX:
@@ -763,13 +763,16 @@ findings:
       converted it to a certificate, authenticated with PKINIT, and read the final
       objective flag on the `finance.corp` domain controller.
 
-      > **Note on SID filtering.** The trust is marked `QUARANTINED_DOMAIN`, so a
-      > naive Golden Ticket that injects a foreign *Enterprise Admins* SID
-      > (RID 519) via SID history is **filtered and rejected**, SID filtering
-      > working as designed. The successful approach instead forges an inter-realm
-      > TGT with the **trust key** and impersonates a *native* `finance.corp`
-      > account (RID 500), which is not stripped by the outbound filter.
-    compromission_steps: |
+      > **Note on SID filtering.** The trust is marked `QUARANTINED_DOMAIN`, which
+      > strips **all** foreign SIDs from the SID-history field of inbound tickets,
+      > not only RID 519. A naive Golden Ticket that relies on injecting a foreign
+      > *Enterprise Admins* SID (RID 519) via SID history is therefore filtered and
+      > rejected. The successful approach avoids SID history entirely: it forges a
+      > TGT with the **trust key** whose native realm claim is already
+      > `finance.corp`, impersonating a native `finance.corp` account (`finadmin`,
+      > RID 500). Because nothing foreign is being smuggled in, there is nothing
+      > for the quarantine filter to strip.
+    compromise_steps: |
       **Trust-key extraction (as Domain Admin, on TECH-DC).** DCSync the trust
       keys and the `krbtgt` hash:
 
