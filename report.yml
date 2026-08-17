@@ -317,8 +317,10 @@ findings:
     recommendation: |
       - Deploy **LAPS** and **Windows Defender Credential Guard** to protect LSASS
         secrets and prevent machine/domain credential reuse.
-      - Alert on **Defender tamper events** (real-time protection being disabled)
-        and on local-administrators group membership changes.
+      - Enable **Defender Tamper Protection** to prevent `Set-MpPreference` from
+        disabling real-time protection, and alert on Defender Operational events
+        5001/5007 (protection-state changes) and on local-administrators group
+        membership changes.
       - Place high-value accounts in the **Protected Users** group and enforce a
         tiered administration model.
     references:
@@ -459,10 +461,11 @@ findings:
       ![`techservice` credentials recovered from MGMTSRV](images/img31.png)
     recommendation: |
       - Audit and remove write access to **`msDS-AllowedToActOnBehalfOfOtherIdentity`**
-        for non-administrative principals; no standard machine account should be
-        able to configure delegation on another host.
-      - Set `ms-DS-MachineAccountQuota` to 0 and mark Tier-0 accounts as
-        **sensitive and cannot be delegated**.
+        for non-administrative principals; no account should be able to configure
+        delegation on a computer object it does not own (the write access
+        `STUDVM$` held over MGMTSRV is exactly this problem).
+      - Mark Tier-0 accounts as **sensitive and cannot be delegated** so they
+        cannot be impersonated through S4U even where delegation is configured.
       - Monitor Event ID 4769 for S4U ticket requests referencing privileged
         users.
     references:

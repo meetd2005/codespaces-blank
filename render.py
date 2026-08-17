@@ -184,8 +184,11 @@ class Renderer:
 
             if not caption:
                 # Uncaptioned images (the methodology diagram) stay out of the
-                # figure numbering and the List of Figures.
-                return f"<figure{figure_class}>{img}</figure>"
+                # figure numbering and the List of Figures. The `fig-uncounted`
+                # class stops base.css's figure-counter from consuming a number
+                # for them, so the first captioned figure is Figure 1.
+                cls = (classes + " fig-uncounted").strip() if classes else "fig-uncounted"
+                return f'<figure class="{html.escape(cls, quote=True)}">{img}</figure>'
 
             self.figure_counter += 1
             fig_id = f"figure-{self.figure_counter}"

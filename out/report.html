@@ -197,7 +197,7 @@ collapses everything downstream of them.</p>
 <pagebreak />
 <section>
   <h1 id="methodology" class="in-toc numbered">Methodology</h1>
-<figure><img alt="" src="design/assets/methodology.png" width="auto"></figure>
+<figure class="fig-uncounted"><img alt="" src="design/assets/methodology.png" width="auto"></figure>
 <p>The assessment followed an assumed-breach methodology aligned with the MITRE
 ATT&amp;CK framework. Beginning with the credentials of a single low-privileged
 domain user, testing progressed through the following phases:</p>
@@ -380,8 +380,10 @@ net localgroup administrators TECH\studentuser /add
 <ul>
 <li>Deploy <strong>LAPS</strong> and <strong>Windows Defender Credential Guard</strong> to protect LSASS
   secrets and prevent machine/domain credential reuse.</li>
-<li>Alert on <strong>Defender tamper events</strong> (real-time protection being disabled)
-  and on local-administrators group membership changes.</li>
+<li>Enable <strong>Defender Tamper Protection</strong> to prevent <code>Set-MpPreference</code> from
+  disabling real-time protection, and alert on Defender Operational events
+  5001/5007 (protection-state changes) and on local-administrators group
+  membership changes.</li>
 <li>Place high-value accounts in the <strong>Protected Users</strong> group and enforce a
   tiered administration model.</li>
 </ul>
@@ -529,10 +531,11 @@ account used in F-5:</p>
     <h3>Recommendations</h3>
 <ul>
 <li>Audit and remove write access to <strong><code>msDS-AllowedToActOnBehalfOfOtherIdentity</code></strong>
-  for non-administrative principals; no standard machine account should be
-  able to configure delegation on another host.</li>
-<li>Set <code>ms-DS-MachineAccountQuota</code> to 0 and mark Tier-0 accounts as
-  <strong>sensitive and cannot be delegated</strong>.</li>
+  for non-administrative principals; no account should be able to configure
+  delegation on a computer object it does not own (the write access
+  <code>STUDVM$</code> held over MGMTSRV is exactly this problem).</li>
+<li>Mark Tier-0 accounts as <strong>sensitive and cannot be delegated</strong> so they
+  cannot be impersonated through S4U even where delegation is configured.</li>
 <li>Monitor Event ID 4769 for S4U ticket requests referencing privileged
   users.</li>
 </ul>
@@ -931,8 +934,10 @@ C:\Users\finadmin\Desktop&gt; type finalflag.txt
       <tr class="table-row-link"><td><a class="ref" href="#f-2-local-privilege-escalation-and-lsass-credential-theft">F-2 · Local Privilege Escalation and LSASS Credential Theft</a></td><td><a class="ref" href="#f-2-local-privilege-escalation-and-lsass-credential-theft"><ul>
 <li>Deploy <strong>LAPS</strong> and <strong>Windows Defender Credential Guard</strong> to protect LSASS
   secrets and prevent machine/domain credential reuse.</li>
-<li>Alert on <strong>Defender tamper events</strong> (real-time protection being disabled)
-  and on local-administrators group membership changes.</li>
+<li>Enable <strong>Defender Tamper Protection</strong> to prevent <code>Set-MpPreference</code> from
+  disabling real-time protection, and alert on Defender Operational events
+  5001/5007 (protection-state changes) and on local-administrators group
+  membership changes.</li>
 <li>Place high-value accounts in the <strong>Protected Users</strong> group and enforce a
   tiered administration model.</li>
 </ul></a></td></tr>
@@ -946,10 +951,11 @@ C:\Users\finadmin\Desktop&gt; type finalflag.txt
 </ul></a></td></tr>
       <tr class="table-row-link"><td><a class="ref" href="#f-4-resource-based-constrained-delegation-rbcd-to-mgmtsrv">F-4 · Resource-Based Constrained Delegation (RBCD) to MGMTSRV</a></td><td><a class="ref" href="#f-4-resource-based-constrained-delegation-rbcd-to-mgmtsrv"><ul>
 <li>Audit and remove write access to <strong><code>msDS-AllowedToActOnBehalfOfOtherIdentity</code></strong>
-  for non-administrative principals; no standard machine account should be
-  able to configure delegation on another host.</li>
-<li>Set <code>ms-DS-MachineAccountQuota</code> to 0 and mark Tier-0 accounts as
-  <strong>sensitive and cannot be delegated</strong>.</li>
+  for non-administrative principals; no account should be able to configure
+  delegation on a computer object it does not own (the write access
+  <code>STUDVM$</code> held over MGMTSRV is exactly this problem).</li>
+<li>Mark Tier-0 accounts as <strong>sensitive and cannot be delegated</strong> so they
+  cannot be impersonated through S4U even where delegation is configured.</li>
 <li>Monitor Event ID 4769 for S4U ticket requests referencing privileged
   users.</li>
 </ul></a></td></tr>
