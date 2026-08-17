@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Render a report from report.yml into HTML and PDF using the exported
-Altered Security SysReptor design — without needing a SysReptor instance.
+Altered Security SysReptor design, without needing a SysReptor instance.
 
 SysReptor renders a design's Vue template against the report data and prints
 the result with WeasyPrint. This script does the same job: it builds the same
@@ -430,25 +430,6 @@ def build_document(data: dict, base_dir: Path) -> str:
     w("      </tbody>")
     w("    </table>")
     w("  </div>")
-
-    w("  <div>")
-    w('    <h2 id="recommendations-summary" class="in-toc numbered">Recommendations</h2>')
-    w('    <table class="tbl-reco">')
-    w('      <thead><tr><th style="width: 150px;">Name</th><th>Details</th></tr></thead>')
-    w("      <tbody>")
-    for finding in findings:
-        fid = finding["id"]
-        w(f'        <tr class="table-row-link">'
-          f'<td><a class="ref" href="#{esc(fid)}">{esc(finding.get("title", ""))}</a></td>'
-          f'<td><a class="ref" href="#{esc(fid)}">{r.md(finding.get("recommendation"))}</a></td></tr>')
-    w("      </tbody>")
-    w("    </table>")
-    w("  </div>")
-
-    w("  <div>")
-    w('    <h2 id="conclusion" class="in-toc numbered">Conclusion</h2>')
-    w(r.md(report.get("conclusion")))
-    w("  </div>")
     w("</section>")
     w("<pagebreak />")
 
@@ -496,8 +477,9 @@ def build_document(data: dict, base_dir: Path) -> str:
           f'<td>{esc(finding.get("fqdn", ""))}</td></tr>')
         w(f'      <tr><td class="table-key">OS Details</td>'
           f'<td>{r.md(finding.get("os_details"))}</td></tr>')
-        w(f'      <tr><td class="table-key">IP Address</td>'
-          f'<td>{esc(finding.get("ip_address", ""))}</td></tr>')
+        if finding.get("ip_address"):
+            w(f'      <tr><td class="table-key">IP Address</td>'
+              f'<td>{esc(finding.get("ip_address"))}</td></tr>')
         w("    </table>")
 
         w("    <h3>Description</h3>")
@@ -524,6 +506,30 @@ def build_document(data: dict, base_dir: Path) -> str:
         w("    <pagebreak />")
         w("  </div>")
     w("</section>")
+
+    # ---- recommendations (placed near the end) -----------------------------
+    w("<section>")
+    w('  <h1 id="recommendations" class="in-toc numbered">Recommendations</h1>')
+    w('  <table class="tbl-reco">')
+    w('    <thead><tr><th style="width: 150px;">Name</th><th>Details</th></tr></thead>')
+    w("    <tbody>")
+    for finding in findings:
+        fid = finding["id"]
+        w(f'      <tr class="table-row-link">'
+          f'<td><a class="ref" href="#{esc(fid)}">{esc(finding.get("title", ""))}</a></td>'
+          f'<td><a class="ref" href="#{esc(fid)}">{r.md(finding.get("recommendation"))}</a></td></tr>')
+    w("    </tbody>")
+    w("  </table>")
+    w("</section>")
+    w("<pagebreak />")
+
+    # ---- conclusion (placed near the end) ----------------------------------
+    if (report.get("conclusion") or "").strip():
+        w("<section>")
+        w('  <h1 id="conclusion" class="in-toc numbered">Conclusion</h1>')
+        w(r.md(report.get("conclusion")))
+        w("</section>")
+        w("<pagebreak />")
 
     # ---- disclaimer --------------------------------------------------------
     if (report.get("disclaimer") or "").strip():

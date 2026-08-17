@@ -1,7 +1,7 @@
-# CRTP Exam Report — Altered Security design, rendered offline
+# CRTP Exam Report - Altered Security design, rendered offline
 
 A complete, professional CRTP (Certified Red Team Professional) exam report,
-rendered with the official **Altered Security** SysReptor design — but produced
+rendered with the official **Altered Security** SysReptor design - but produced
 entirely offline with WeasyPrint, so you never have to upload anything to a
 SysReptor instance.
 
@@ -37,7 +37,7 @@ the design as intended.
 
 ## Editing the report
 
-Open `report.yml`. Every field marked `(markdown)` accepts markdown — tables,
+Open `report.yml`. Every field marked `(markdown)` accepts markdown - tables,
 **bold**, `inline code`, fenced ```code blocks```, and images.
 
 **Add a screenshot** as a captioned figure (it auto-numbers and appears in the
@@ -71,9 +71,9 @@ the `finance.corp` forest across the trust:
 
 1. **F-1** Cleartext credentials in the `maintenance` file share → `studentadmin`
 2. **F-2** Local admin + LSASS dump → `STUDVM$`
-3. **F-3** Domain recon (adPEAS, BloodHound) — trust, delegation, AD CS, LAPS gaps
+3. **F-3** Domain recon (adPEAS, BloodHound) - trust, delegation, AD CS, LAPS gaps
 4. **F-4** Resource-Based Constrained Delegation → impersonate DA on MGMTSRV → `techservice`
-5. **F-5** ACL abuse — AddSelf to `Management`, Force-Change-Password `puretech`
+5. **F-5** ACL abuse - AddSelf to `Management`, Force-Change-Password `puretech`
 6. **F-6** Lateral movement to TECHSRV30 → SAM secrets (`securetech`)
 7. **F-7** LSA secrets → `causer` (SNMPTRAP), `ADMINSRV86$`
 8. **F-8** AD CS **ESC3** enrollment-agent abuse → Domain Admin (`techadmin`)
@@ -83,6 +83,6 @@ the `finance.corp` forest across the trust:
 
 The hashes, passwords and the final flag in this report are the real values
 captured in the isolated CRTP exam lab, included as proof of compromise per exam
-convention. The one value not captured in the screenshots — the `finadmin.pfx`
-export password in F-9 — is left as `<pfx-password>`; set it to the password you
+convention. The one value not captured in the screenshots - the `finadmin.pfx`
+export password in F-9 - is left as `<pfx-password>`; set it to the password you
 chose during the `openssl` export.

