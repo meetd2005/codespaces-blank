@@ -324,8 +324,7 @@ def build_document(data: dict, base_dir: Path) -> str:
 
     w('<div id="footer">')
     w('  <div id="footer-brand">')
-    w('    <img src="design/assets/AlteredSecurity-2048x594--1-.png" alt="Altered Security" />'
-      '<span class="footer-tagline">OFFENSIVE SECURITY</span>')
+    w('    <img src="design/assets/AlteredSecurity-2048x594--1-.png" alt="Altered Security" />')
     w("  </div>")
     w('  <div id="footer-left"><em>CONFIDENTIAL</em></div>')
     w(f'  <div id="footer-center">{esc(title)}</div>')
@@ -345,8 +344,7 @@ def build_document(data: dict, base_dir: Path) -> str:
     w('  <div class="cover-panel">')
     w('    <div class="cover-brand">')
     w('      <img class="cover-logo" src="design/assets/AlteredSecurity-2048x594--1-.png" '
-      'alt="Altered Security" /><span class="cover-divider"></span>'
-      '<span class="cover-tagline">OFFENSIVE SECURITY</span>')
+      'alt="Altered Security" />')
     w("    </div>")
     w('    <div class="cover-title">')
     w("      <h1>RED TEAM ASSESSMENT REPORT</h1>")
