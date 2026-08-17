@@ -806,6 +806,8 @@ findings:
       # UserName : techadmin (NT_PRINCIPAL)   ->  ticket for krbtgt/tech.corp
       ```
 
+      ![PKINIT with the `techadmin` certificate: Domain Admin TGT issued (krbtgt/tech.corp)](images/img64.png){.evidence}
+
       Confirm operating-system-level command execution on the domain controller as
       `techadmin`, satisfying the scope objective for TECH-DC:
 
