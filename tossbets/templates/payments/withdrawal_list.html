@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Withdrawal History{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">💸 Withdrawal History</h4>
+  <a href="{% url 'payments:withdrawal_request' %}" class="btn btn-success btn-sm">+ New Withdrawal</a>
+</div>
+<div class="table-responsive">
+  <table class="table table-dark table-hover">
+    <thead>
+      <tr><th>Ref</th><th>Coins</th><th>Amount</th><th>UPI</th><th>Status</th><th>UTR Paid</th><th>Date</th></tr>
+    </thead>
+    <tbody>
+      {% for wd in page %}
+      <tr>
+        <td><code>{{ wd.short_ref }}</code></td>
+        <td>{{ wd.coins|floatformat:0 }} 🪙</td>
+        <td>₹{{ wd.rupee_amount }}</td>
+        <td class="text-muted small">{{ wd.upi_id }}</td>
+        <td>
+          {% if wd.status == "paid" %}<span class="badge bg-success">Paid</span>
+          {% elif wd.status == "approved" %}<span class="badge bg-info text-dark">Approved</span>
+          {% elif wd.status == "rejected" %}<span class="badge bg-danger">Rejected</span>
+          {% else %}<span class="badge bg-secondary">Pending</span>{% endif %}
+        </td>
+        <td>{{ wd.upi_ref_paid|default:"—" }}</td>
+        <td class="text-muted small">{{ wd.requested_at|date:"d M, H:i" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="text-center py-4 text-muted">No withdrawals yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if page.has_other_pages %}
+<nav>
+  <ul class="pagination justify-content-center">
+    {% if page.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page.previous_page_number }}">Prev</a></li>{% endif %}
+    <li class="page-item disabled"><span class="page-link">{{ page.number }}/{{ page.paginator.num_pages }}</span></li>
+    {% if page.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page.next_page_number }}">Next</a></li>{% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

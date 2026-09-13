@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Deposit History{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">💰 Deposit History</h4>
+  <a href="{% url 'payments:deposit_request' %}" class="btn btn-primary btn-sm">+ New Deposit</a>
+</div>
+<div class="table-responsive">
+  <table class="table table-dark table-hover">
+    <thead>
+      <tr><th>Ref</th><th>Amount</th><th>Coins</th><th>UTR</th><th>Status</th><th>Date</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for dep in page %}
+      <tr>
+        <td><code>{{ dep.short_ref }}</code></td>
+        <td>₹{{ dep.rupee_amount }}</td>
+        <td>{{ dep.coins|floatformat:0 }} 🪙</td>
+        <td>{{ dep.upi_ref|default:"—" }}</td>
+        <td>
+          {% if dep.status == "confirmed" %}<span class="badge bg-success">Confirmed</span>
+          {% elif dep.status == "review" %}<span class="badge bg-info text-dark">Under Review</span>
+          {% elif dep.status == "rejected" %}<span class="badge bg-danger">Rejected</span>
+          {% else %}<span class="badge bg-secondary">Pending</span>{% endif %}
+        </td>
+        <td class="text-muted small">{{ dep.requested_at|date:"d M, H:i" }}</td>
+        <td>
+          {% if dep.status == "pending" %}
+          <a href="{% url 'payments:deposit_pay' dep.pk %}" class="btn btn-sm btn-outline-warning">Pay</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="text-center py-4 text-muted">No deposits yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if page.has_other_pages %}
+<nav>
+  <ul class="pagination justify-content-center">
+    {% if page.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page.previous_page_number }}">Prev</a></li>{% endif %}
+    <li class="page-item disabled"><span class="page-link">{{ page.number }}/{{ page.paginator.num_pages }}</span></li>
+    {% if page.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page.next_page_number }}">Next</a></li>{% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}
