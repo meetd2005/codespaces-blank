@@ -1,88 +1,111 @@
-# CRTP Exam Report - Altered Security design, rendered offline
+# Rakatoss 🪙
 
-A complete, professional CRTP (Certified Red Team Professional) exam report,
-rendered with the official **Altered Security** SysReptor design - but produced
-entirely offline with WeasyPrint, so you never have to upload anything to a
-SysReptor instance.
+> Coin-based toss betting platform — no real money, pure fun.  
+> Built with **SvelteKit + Cloudflare Pages + Turso (libSQL) + Drizzle ORM**.
 
-You edit one YAML file, run one command, and get a polished, branded PDF.
+---
 
-```
-python3 render.py            # -> out/report.html  and  out/report.pdf
-```
+## Stack
 
-## What's here
+| Layer | Tech |
+|---|---|
+| Framework | SvelteKit (SSR + API routes) |
+| Hosting | Cloudflare Pages + Workers |
+| Database | Turso (libSQL / SQLite edge) + Drizzle ORM |
+| Auth | Lucia v3 (7-day session, Cloudflare KV) |
+| Admin 2FA | TOTP via `@oslojs/otp` (Google Authenticator / Authy) |
+| Email | Brevo API (verification + password reset only) |
+| Media | Cloudinary (deposit screenshots) |
+| Real-time | SSE (Server-Sent Events) — free on Cloudflare Workers |
+| UI | Tailwind CSS v4 + custom design system |
+| Validation | Zod (all forms + API routes) |
+| QR codes | `qrcode` (client-side UPI deep link generation) |
 
-| Path | What it is |
-| :--- | :--- |
-| `report.yml` | **The only file you edit.** All report content: summary, scope, findings F-1…F-9. |
-| `render.py` | The renderer. Reproduces the SysReptor design from `report.yml`. |
-| `images/` | All 75 exam screenshots (`img00.png`…`img74.png`), pulled from the Notion page. See `images/README.md` for the finding-by-finding map. |
-| `design/styles.css` | The **untouched** Altered Security design export (do not edit). |
-| `design/base.css` | Reconstruction of the SysReptor global stylesheet the design imports. |
-| `design/renderer.css` | Small, documented deviations from the export (finding numbering, evidence sizing). |
-| `design/assets/` | Cover photo, logo and methodology diagram from the design. |
-| `out/report.pdf` | The rendered deliverable. |
-| `requirements.txt` | Python dependencies. |
+---
 
-## Setup
+## Quick Start (local dev)
 
 ```bash
-pip install -r requirements.txt
-python3 render.py
+cd rakatoss
+cp .env.example .env     # fill in your Turso + Brevo + Cloudinary keys
+npm install
+npm run dev
 ```
 
-WeasyPrint is the same rendering engine SysReptor uses, so the output matches
-the design as intended.
-
-## Editing the report
-
-Open `report.yml`. Every field marked `(markdown)` accepts markdown - tables,
-**bold**, `inline code`, fenced ```code blocks```, and images.
-
-**Add a screenshot** as a captioned figure (it auto-numbers and appears in the
-List of Figures):
-
-```markdown
-![What the screenshot shows](images/img27.png)
-```
-
-**Make an image larger** (for full-width terminal captures) by adding
-`{.evidence}`:
-
-```markdown
-![Domain Admin TGT via PKINIT](images/img64.png){.evidence}
-```
-
-**Add a finding**: copy one `- title: …` block under `findings:` and fill in the
-fields (`title`, `hostname`, `fqdn`, `ip_address`, `os_details`, `description`,
-`compromission_steps`, `recommendation`, `references`).
-
-Preview quickly without rendering the PDF each time:
+### Seed the DB
 
 ```bash
-python3 render.py --html-only && open out/report.html
+# Generate and apply migrations
+npm run db:generate
+npm run db:migrate
+
+# Then in a Node shell seed the bonus tiers + superadmin:
+node -e "
+  import('./src/lib/db/client.js').then(({ getDb }) => {
+    const db = getDb();
+    import('./src/lib/server/bonus.js').then(({ seedDefaultBonusTiers }) => seedDefaultBonusTiers(db));
+  });
+"
 ```
 
-## The attack chain (F-1 → F-9)
+---
 
-Assumed breach as `tech\studentuser` on **STUDVM**, ending in full compromise of
-the `finance.corp` forest across the trust:
+## Deploy to Cloudflare Pages
 
-1. **F-1** Cleartext credentials in the `maintenance` file share → `studentadmin`
-2. **F-2** Local admin + LSASS dump → `STUDVM$`
-3. **F-3** Domain recon (adPEAS, BloodHound) - trust, delegation, AD CS, LAPS gaps
-4. **F-4** Resource-Based Constrained Delegation → impersonate DA on MGMTSRV → `techservice`
-5. **F-5** ACL abuse - AddSelf to `Management`, Force-Change-Password `puretech`
-6. **F-6** Lateral movement to TECHSRV30 → SAM secrets (`securetech`)
-7. **F-7** LSA secrets → `causer` (SNMPTRAP), `ADMINSRV86$`
-8. **F-8** AD CS **ESC3** enrollment-agent abuse → Domain Admin (`techadmin`)
-9. **F-9** Trust-key forgery → cross-forest to `finance.corp` → final flag
+1. Create a Turso database and KV namespace
+2. Fill in `wrangler.toml` with your KV namespace ID and env vars
+3. Set secrets: `wrangler secret put TURSO_AUTH_TOKEN`, `wrangler secret put TOTP_ENCRYPTION_KEY`
 
-## Note on secrets
+```bash
+npm run deploy
+```
 
-The hashes, passwords and the final flag in this report are the real values
-captured in the isolated CRTP exam lab, included as proof of compromise per exam
-convention. The one value not captured in the screenshots - the `finadmin.pfx`
-export password in F-9 - is left as `<pfx-password>`; set it to the password you
-chose during the `openssl` export.
+---
+
+## Feature Overview
+
+### User side
+| Feature | Route |
+|---|---|
+| Register / login | `/auth/register` `/auth/login` |
+| Lobby (open matches) | `/` |
+| Match detail + bet + SSE pool | `/matches/[id]` |
+| Deposit via UPI QR | `/wallet/deposit` → `/wallet/deposit/[ref]` |
+| Withdraw coins | `/wallet/withdraw` |
+| Transaction history | `/wallet/history` |
+| My bets | `/bets` |
+| Profile + referral link | `/profile` |
+| Notifications (full log) | `/notifications` |
+| Support tickets | `/support` |
+
+### Admin panel (`/admin`)
+| Section | Features |
+|---|---|
+| Dashboard | KPI tiles, 7-day bet chart |
+| Matches | Create, lock, declare winner (heads/tails), cancel + refund |
+| Deposits | View UTR, confirm → coins credited, reject |
+| Withdrawals | Approve, mark paid, reject + refund |
+| Users | Search, view full history, block/unblock, add/deduct coins |
+| Support | Ticket queue, reply, resolve |
+| Settings | Bonus tiers (superadmin only) |
+
+---
+
+## Settlement Math
+
+```
+prize_pool = losing_side_total − (losing_side_total × houseEdge / 100)
+each_winner = their_bet + (their_bet / winning_side_total) × prize_pool
+```
+
+---
+
+## Design System
+
+Dark + neon aesthetic (bet365-inspired, violet primary):
+- Background: `#0a0e1a` (deepest navy)
+- Cards: `#111827`
+- Primary neon: `#7c3aed` (violet)
+- Heads: `#f59e0b` (gold)
+- Tails: `#06b6d4` (cyan)
+- Font: Inter + JetBrains Mono (tabular amounts)
